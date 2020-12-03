@@ -34,10 +34,6 @@ app = FastAPI(
 )
 
 
-@app.on_event("startup")
-async def on_start():
-    pass
-
 router = router.Router(app, app_files, import_callback)
 
 if __name__ == '__main__':
