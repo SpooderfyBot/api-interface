@@ -7,6 +7,7 @@ import router
 import logging
 
 from fastapi import responses, FastAPI
+from gateway import Gateway, gateway_connect
 
 ALTER_ROOM_URL = "http://127.0.0.1:8888/alter?op={}&room_id={}"
 WS_EMITTER_URL = "ws://127.0.0.1:8888/emitters"
@@ -36,7 +37,7 @@ class PlayerEndpoints(router.Blueprint):
         self.app.on_event("startup")(self.start_up)
         self.app.on_event("shutdown")(self.shutdown)
 
-        self.ws: t.Optional[aiohttp.ClientWebSocketResponse] = None
+        self.ws: t.Optional[Gateway] = None
         self.session: t.Optional[aiohttp.ClientSession] = None
 
     async def start_up(self):
@@ -47,22 +48,7 @@ class PlayerEndpoints(router.Blueprint):
         """
 
         self.session = aiohttp.ClientSession()
-        await self.connect()
-
-    async def connect(self):
-        session = aiohttp.ClientSession()
-        while True:
-            try:
-                self.ws = await session.ws_connect(WS_EMITTER_URL)
-                return
-            except (ConnectionResetError, ConnectionRefusedError):
-                print("Couldn't connect to the WS, retry in:")
-                print("3")
-                await asyncio.sleep(1)
-                print("2")
-                await asyncio.sleep(1)
-                print("1")
-                await asyncio.sleep(1)
+        self.ws = await gateway_connect(WS_EMITTER_URL)
 
     async def shutdown(self):
         """
@@ -70,17 +56,8 @@ class PlayerEndpoints(router.Blueprint):
         and the aiohttp session correctly making everything nice :=)
         """
 
-        await self.ws.close()
+        await self.ws.shutdown()
         await self.session.close()
-
-    async def send_data(self, data: dict):
-        data = orjson.dumps(data)
-        try:
-            await self.ws.send_bytes(data)
-            return
-        except ConnectionResetError:
-            await self.connect()
-        await self.ws.send_bytes(data)
 
     @router.endpoint(
         "/api/player/{room_id:str}/play",
@@ -96,7 +73,7 @@ class PlayerEndpoints(router.Blueprint):
         otherwise it wont emit to the gateway.
         """
 
-        await self.send_data({
+        await self.ws.send({
             "room_id": room_id,
             "message": {
                 "op": OP_PLAY,
@@ -118,7 +95,7 @@ class PlayerEndpoints(router.Blueprint):
         otherwise it wont emit to the gateway.
         """
 
-        await self.send_data({
+        await self.ws.send({
             "room_id": room_id,
             "message": {
                 "op": OP_PAUSE,
@@ -140,7 +117,7 @@ class PlayerEndpoints(router.Blueprint):
         otherwise it wont emit to the gateway.
         """
 
-        await self.send_data({
+        await self.ws.send({
             "room_id": room_id,
             "message": {
                 "op": OP_SEEK,
@@ -163,7 +140,7 @@ class PlayerEndpoints(router.Blueprint):
         otherwise it wont emit to the gateway.
         """
 
-        await self.send_data({
+        await self.ws.send({
             "room_id": room_id,
             "message": {
                 "op": OP_NEXT,
@@ -189,7 +166,7 @@ class PlayerEndpoints(router.Blueprint):
         otherwise it wont emit to the gateway.
         """
 
-        await self.send_data({
+        await self.ws.send({
             "room_id": room_id,
             "message": {
                 "op": OP_PREV,
@@ -225,7 +202,7 @@ class GateKeeping(router.Blueprint):
         self.app.on_event("startup")(self.start_up)
         self.app.on_event("shutdown")(self.shutdown)
 
-        self.ws: t.Optional[aiohttp.ClientWebSocketResponse] = None
+        self.ws: t.Optional[Gateway] = None
         self.session: t.Optional[aiohttp.ClientSession] = None
 
     async def start_up(self):
@@ -236,22 +213,7 @@ class GateKeeping(router.Blueprint):
         """
 
         self.session = aiohttp.ClientSession()
-        await self.connect()
-
-    async def connect(self):
-        session = aiohttp.ClientSession()
-        while True:
-            try:
-                self.ws = await session.ws_connect(WS_EMITTER_URL)
-                return
-            except (ConnectionResetError, ConnectionRefusedError):
-                print("Couldn't connect to the WS, retry in:")
-                print("3")
-                await asyncio.sleep(1)
-                print("2")
-                await asyncio.sleep(1)
-                print("1")
-                await asyncio.sleep(1)
+        self.ws = await gateway_connect(WS_EMITTER_URL)
 
     async def shutdown(self):
         """
@@ -259,16 +221,8 @@ class GateKeeping(router.Blueprint):
         and the aiohttp session correctly making everything nice :=)
         """
 
-        await self.ws.close()
+        await self.ws.shutdown()
         await self.session.close()
-
-    async def send_data(self, data: dict):
-        data = orjson.dumps(data)
-        try:
-            await self.ws.send_bytes(data)
-        except ConnectionResetError:
-            await self.connect()
-        await self.ws.send_bytes(data)
 
     @router.endpoint(
         "/api/room/{room_id:str}/add/user",
