@@ -47,7 +47,22 @@ class PlayerEndpoints(router.Blueprint):
         """
 
         self.session = aiohttp.ClientSession()
-        self.ws = await self.session.ws_connect(WS_EMITTER_URL)
+        await self.connect()
+
+    async def connect(self):
+        session = aiohttp.ClientSession()
+        while True:
+            try:
+                self.ws = await session.ws_connect(WS_EMITTER_URL)
+                return
+            except (ConnectionResetError, ConnectionRefusedError):
+                print("Couldn't connect to the WS, retry in:")
+                print("3")
+                await asyncio.sleep(1)
+                print("2")
+                await asyncio.sleep(1)
+                print("1")
+                await asyncio.sleep(1)
 
     async def shutdown(self):
         """
@@ -60,15 +75,20 @@ class PlayerEndpoints(router.Blueprint):
 
     async def send_data(self, data: dict):
         data = orjson.dumps(data)
+        try:
+            await self.ws.send_bytes(data)
+            return
+        except ConnectionResetError:
+            await self.connect()
         await self.ws.send_bytes(data)
 
     @router.endpoint(
-        "/api/player/{room_id:int}/play",
+        "/api/player/{room_id:str}/play",
         endpoint_name="Play Player",
         description="Used to play a set player",
         methods=["PUT"],
     )
-    async def play_player(self, room_id: int):
+    async def play_player(self, room_id: str):
         """
         Begins the play the player of a specific room.
 
@@ -85,12 +105,12 @@ class PlayerEndpoints(router.Blueprint):
         return responses.ORJSONResponse({"status": 200, "message": "OK"})
 
     @router.endpoint(
-        "/api/player/{room_id:int}/pause",
+        "/api/player/{room_id:str}/pause",
         endpoint_name="Pause the player",
         description="Used to pause a set player",
         methods=["PUT"],
     )
-    async def pause_player(self, room_id: int):
+    async def pause_player(self, room_id: str):
         """
         Pauses the player of a specific room.
 
@@ -107,12 +127,12 @@ class PlayerEndpoints(router.Blueprint):
         return responses.ORJSONResponse({"status": 200, "message": "OK"})
 
     @router.endpoint(
-        "/api/player/{room_id:int}/seek",
+        "/api/player/{room_id:str}/seek",
         endpoint_name="Seek the player",
         description="Used to start a seek to a specific player",
         methods=["PUT"],
     )
-    async def seek_player(self, room_id: int, position: int):
+    async def seek_player(self, room_id: str, position: int):
         """
         Seeks to a set position of the player of a specific room.
 
@@ -130,12 +150,12 @@ class PlayerEndpoints(router.Blueprint):
         return responses.ORJSONResponse({"status": 200, "message": "OK"})
 
     @router.endpoint(
-        "/api/player/{room_id:int}/next",
+        "/api/player/{room_id:str}/next",
         endpoint_name="Next Video",
         description="Cycles to the next item in a playlist",
         methods=["PUT"],
     )
-    async def next_item(self, room_id: int):
+    async def next_item(self, room_id: str):
         """
         Switches to the next track of the player of a specific room.
 
@@ -156,12 +176,12 @@ class PlayerEndpoints(router.Blueprint):
         return responses.ORJSONResponse({"status": 200, "message": "OK"})
 
     @router.endpoint(
-        "/api/player/{room_id:int}/prev",
+        "/api/player/{room_id:str}/prev",
         endpoint_name="Previous Video",
         description="Cycles to the previous item in a playlist",
         methods=["PUT"],
     )
-    async def previous_item(self, room_id: int):
+    async def previous_item(self, room_id: str):
         """
         Switches to the previous track of the player of a specific room.
 
@@ -187,7 +207,7 @@ class MessageChat(router.Blueprint):
         self.app = app
 
     @router.endpoint(
-        "/api/room/{room_id:int}/message",
+        "/api/room/{room_id:str}/message",
         endpoint_name="Send Message",
         description="Send a message to the set chat room.",
         methods=["PUT"],
@@ -214,17 +234,40 @@ class GateKeeping(router.Blueprint):
         this allows us to start our connection to the gateway as an
         emitter and also create a session that we can use later on.
         """
+
         self.session = aiohttp.ClientSession()
+        await self.connect()
+
+    async def connect(self):
+        session = aiohttp.ClientSession()
+        while True:
+            try:
+                self.ws = await session.ws_connect(WS_EMITTER_URL)
+                return
+            except (ConnectionResetError, ConnectionRefusedError):
+                print("Couldn't connect to the WS, retry in:")
+                print("3")
+                await asyncio.sleep(1)
+                print("2")
+                await asyncio.sleep(1)
+                print("1")
+                await asyncio.sleep(1)
 
     async def shutdown(self):
         """
         Called when the server begins to shutdown which closes the ws connection
         and the aiohttp session correctly making everything nice :=)
         """
+
+        await self.ws.close()
         await self.session.close()
 
     async def send_data(self, data: dict):
         data = orjson.dumps(data)
+        try:
+            await self.ws.send_bytes(data)
+        except ConnectionResetError:
+            await self.connect()
         await self.ws.send_bytes(data)
 
     @router.endpoint(
