@@ -7,11 +7,11 @@ from fastapi import responses, FastAPI, Request
 from gateway import Gateway, gateway_connect
 from models import Message, User
 from redis import redis
-from utils import create_session_id, session_valid, login_required
+from utils import create_session_id, session_valid
 
 
-ALTER_ROOM_URL = "http://127.0.0.1:8888/alter?op={}&room_id={}"
-WS_EMITTER_URL = "ws://127.0.0.1:8888/emitters"
+ALTER_ROOM_URL = "http:///192.168.32.1:5051/alter?op={}&room_id={}"
+WS_EMITTER_URL = "ws://192.168.32.1:5051/emitters"
 
 DISCORD_AVATAR = "https://images.discordapp.net/avatars/" \
                  "{user_id}/{avatar}.png?size=512"
