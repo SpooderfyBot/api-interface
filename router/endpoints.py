@@ -70,6 +70,7 @@ class Websocket:
 pending_endpoints = {}
 loaded_endpoints = []
 
+
 class Blueprint:
     __endpoints = []
 
@@ -94,7 +95,7 @@ def get_class_and_name(func):
     return func.__qualname__.split(".", maxsplit=1)
 
 
-def endpoint(route: str, endpoint_name, methods: t.Optional[t.List[str]]=None, **extra):
+def endpoint(route: str, endpoint_name, methods: t.Optional[t.List[str]] = None, **extra):
     if methods is None:
         methods = ["GET"]
 
@@ -110,6 +111,7 @@ def endpoint(route: str, endpoint_name, methods: t.Optional[t.List[str]]=None, *
         pending_endpoints[cls].append(Endpoint(func, callback_name, methods, endpoint_name, extra))
 
         return func
+
     return wrapper
 
 
@@ -126,5 +128,5 @@ def websocket(route: str):
         pending_endpoints[cls].append(Websocket(func, callback_name))
 
         return func
-    return wrapper
 
+    return wrapper

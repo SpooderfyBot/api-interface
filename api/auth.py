@@ -136,4 +136,4 @@ class Authorization(router.Blueprint):
 
 
 def setup(app):
-    app.add_blueprint()
+    app.add_blueprint(Authorization(app))

@@ -32,7 +32,7 @@ OP_MESSAGE = 5
 gatekeeper = logging.getLogger("api-gatekeeper")
 
 
-class BaseGatewayEnabled(router.Blueprint):
+class BaseGatewayEnabled:
     def __init__(self, app: FastAPI):
         self.app = app
 
@@ -63,7 +63,7 @@ class BaseGatewayEnabled(router.Blueprint):
         await self.session.close()
 
 
-class PlayerEndpoints(BaseGatewayEnabled):
+class PlayerEndpoints(BaseGatewayEnabled, router.Blueprint):
 
     @router.endpoint(
         "/api/player/{room_id:str}/play",
@@ -215,7 +215,7 @@ class PlayerEndpoints(BaseGatewayEnabled):
         return responses.ORJSONResponse({"status": 200, "message": "OK"})
 
 
-class MessageChat(BaseGatewayEnabled):
+class MessageChat(BaseGatewayEnabled, router.Blueprint):
 
     @router.endpoint(
         "/api/room/{room_id:str}/message",
@@ -260,7 +260,7 @@ class MessageChat(BaseGatewayEnabled):
         return responses.ORJSONResponse({"status": 200, "message": "OK"})
 
 
-class GateKeeping(BaseGatewayEnabled):
+class GateKeeping(BaseGatewayEnabled, router.Blueprint):
 
     @router.endpoint(
         "/api/room/{room_id:str}/add/user",
