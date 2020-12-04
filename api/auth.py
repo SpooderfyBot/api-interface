@@ -85,14 +85,16 @@ class Authorization(router.Blueprint):
             resp = responses.RedirectResponse(url)
             resp.set_cookie("redirect_to", redirect_to)
             return resp
-
-        if code is not None:
+        else:
+            print("authed")
             user = await self.get_user(code)
             if user is None:
                 return responses.ORJSONResponse({
                     "status": 500,
                     "message": "discord did not respond correctly",
                 })
+
+            print(user)
 
             session_id = create_session_id()
             await redis['session'].set(session_id, user.dict())
