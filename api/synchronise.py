@@ -10,6 +10,8 @@ from fastapi import responses, FastAPI
 from gateway import Gateway, gateway_connect
 from models import Message
 from redis import redis
+from utils import create_session_id
+
 
 ALTER_ROOM_URL = "http://127.0.0.1:8888/alter?op={}&room_id={}"
 WS_EMITTER_URL = "ws://127.0.0.1:8888/emitters"
@@ -241,8 +243,18 @@ class GateKeeping(router.Blueprint):
 
         The list of user_ids is taken from the POST body of the request.
         """
+        for user_id in user_ids:
+            session_id = create_session_id()
+            await redis['session'].set(user_id, session_id)
+            try:
+                await self.alter_session(room_id, session_id, ADD_SESSION)
+            except ValueError:
+                return responses.ORJSONResponse({
+                    "status": 500,
+                    "message": "Error handling session with gateway."
+                })
 
-        return await self.alter_users(room_id, user_ids, ADD_SESSION)
+        return responses.ORJSONResponse({"status": 200, "message": "OK"})
 
     @router.endpoint(
         "/api/room/{room_id:str}/remove/user",
@@ -257,25 +269,33 @@ class GateKeeping(router.Blueprint):
         protected endpoint this should be alright.
         """
 
-        return await self.alter_users(room_id, user_ids, REMOVE_SESSION)
+        for user_id in user_ids:
+            session_id = await redis['session'].get(user_id)
+            if session_id is None:
+                continue
 
-    async def alter_users(self, room_id: str, user_ids: t.List[str], op: str):
+            try:
+                await self.alter_session(room_id, session_id, REMOVE_SESSION)
+            except ValueError:
+                return responses.ORJSONResponse({
+                    "status": 500,
+                    "message": "Error handling session with gateway."
+                })
+
+        return responses.ORJSONResponse({"status": 200, "message": "OK"})
+
+    async def alter_session(self, room_id: str, session_id: str, op: str):
         # Its a hack i know but i dont really want to make an entire system
         # on the gateway just for adding sessions instead of the existing
         # alter endpoint.
-        for id_ in user_ids:
-            url = (ALTER_ROOM_URL + "&session_id={}").format(op, room_id, id_)
-            async with self.session.post(url) as resp:
-                if resp.status >= 400:
-                    gatekeeper.log(
-                        level=logging.FATAL,
-                        msg=f"Error handling session status: {resp.status}",
-                    )
-                    return responses.ORJSONResponse({
-                        "status": 500,
-                        "message": "Error handling session with gateway."
-                    })
-        return responses.ORJSONResponse({"status": 200, "message": "OK"})
+        url = (ALTER_ROOM_URL + "&session_id={}").format(op, room_id, session_id)
+        async with self.session.post(url) as resp:
+            if resp.status >= 400:
+                gatekeeper.log(
+                    level=logging.FATAL,
+                    msg=f"Error handling session status: {resp.status}",
+                )
+                raise ValueError("Status Invalid")
 
 
 def setup(app):
