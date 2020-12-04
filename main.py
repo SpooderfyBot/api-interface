@@ -6,11 +6,16 @@ import router
 from fastapi import FastAPI
 
 from database import create_engine
+from redis import create_cache
 
 create_engine()
 
-app_files = [
+APP_FILES = [
     "api.synchronise",
+]
+
+CACHE_COLLECTIONS = [
+    "sessions"
 ]
 
 
@@ -34,7 +39,12 @@ app = FastAPI(
 )
 
 
-router = router.Router(app, app_files, import_callback)
+@app.on_event("startup")
+async def init():
+    await create_cache(CACHE_COLLECTIONS)
+
+
+router = router.Router(app, APP_FILES, import_callback)
 
 if __name__ == '__main__':
     logging.basicConfig(level=logging.INFO)

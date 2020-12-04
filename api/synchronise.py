@@ -8,6 +8,7 @@ import logging
 
 from fastapi import responses, FastAPI
 from gateway import Gateway, gateway_connect
+from models import Message
 
 ALTER_ROOM_URL = "http://127.0.0.1:8888/alter?op={}&room_id={}"
 WS_EMITTER_URL = "ws://127.0.0.1:8888/emitters"
@@ -189,7 +190,7 @@ class MessageChat(router.Blueprint):
         description="Send a message to the set chat room.",
         methods=["PUT"],
     )
-    async def pause_player(self, room_id: str):
+    async def send_message(self, room_id: str, msg: Message):
         print(room_id)
         return responses.ORJSONResponse({"status": 200, "message": "OK"})
 
@@ -231,11 +232,38 @@ class GateKeeping(router.Blueprint):
         methods=["POST"],
     )
     async def add_user(self, room_id: str, user_ids: t.List[str]):
+        """
+        Add user can take a list of user ids that are then given a
+        session id, the session id is a randomly general string that is used
+        for the ws connection to avoid people being able to spoof other's
+        sessions or WS connections.
+
+        The list of user_ids is taken from the POST body of the request.
+        """
+
+        return await self.alter_users(room_id, user_ids, ADD_SESSION)
+
+    @router.endpoint(
+        "/api/room/{room_id:str}/remove/user",
+        endpoint_name="Remove user(s)",
+        description="Remove one or several users to the room.",
+        methods=["POST"],
+    )
+    async def remove_user(self, room_id: str, user_ids: t.List[str]):
+        """
+        Removes a set of user ids from a room, this will actually just
+        remove the session ids linked with the user id, because this is a
+        protected endpoint this should be alright.
+        """
+
+        return await self.alter_users(room_id, user_ids, REMOVE_SESSION)
+
+    async def alter_users(self, room_id: str, user_ids: t.List[str], op: str):
         # Its a hack i know but i dont really want to make an entire system
         # on the gateway just for adding sessions instead of the existing
         # alter endpoint.
         for id_ in user_ids:
-            url = (ALTER_ROOM_URL + "&session_id={}").format(ADD_SESSION, room_id, id_)
+            url = (ALTER_ROOM_URL + "&session_id={}").format(op, room_id, id_)
             async with self.session.post(url) as resp:
                 if resp.status >= 400:
                     gatekeeper.log(
