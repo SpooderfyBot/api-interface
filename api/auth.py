@@ -13,7 +13,7 @@ from utils import create_session_id
 CLIENT_ID = os.getenv("DISCORD_CLIENT_ID")
 CLIENT_SECRET = os.getenv("DISCORD_CLIENT_SECRET")
 
-REDIRECT_URL = "https://spooderfy.com/api/login"
+REDIRECT_URI = "https://spooderfy.com/api/login"
 
 DISCORD_BASE_URL = "https://discord.com/api"
 DISCORD_OAUTH2_AUTH = "/oauth2/authorize"
@@ -26,7 +26,7 @@ def make_redirect_url() -> str:
             DISCORD_BASE_URL +
             DISCORD_OAUTH2_AUTH +
             f"?client_id={CLIENT_ID}"
-            f"&redirect_uri={urllib.parse.quote(REDIRECT_URL, safe='')}"
+            f"&redirect_uri={urllib.parse.quote(REDIRECT_URI, safe='')}"
             "&response_type=code"
             "&scope=identify"
             f"&state={create_session_id()}"
@@ -112,7 +112,7 @@ class Authorization(router.Blueprint):
             'client_secret': CLIENT_SECRET,
             'grant_type': 'authorization_code',
             'code': code,
-            'redirect_uri': REDIRECT_URL,
+            'redirect_uri': REDIRECT_URI,
             'scope': 'identify'
         }
         headers = {
