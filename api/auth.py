@@ -57,7 +57,7 @@ class Authorization(router.Blueprint):
     async def login(
             self,
             request: Request,
-            redirect_to: t.Optional[str] = None,
+            redirect_to: str = "/home",
             code: t.Optional[str] = None
     ):
         """
@@ -75,7 +75,7 @@ class Authorization(router.Blueprint):
         and saved.
         """
 
-        if code is None and redirect_to is not None:
+        if code is None:
             existing = request.cookies.get("session")
             if existing is not None:
                 return responses.RedirectResponse(redirect_to)
