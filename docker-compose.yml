@@ -13,6 +13,8 @@ services:
     - "5050:5050"
     depends_on:
       - redis
+    networks:
+      - spooderfy_network
   redis:
     image: redis
     command: redis-server

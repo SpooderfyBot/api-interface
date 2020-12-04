@@ -52,6 +52,7 @@ class BaseGatewayEnabled:
 
         self.session = aiohttp.ClientSession()
         self.ws = await gateway_connect(WS_EMITTER_URL)
+        print("[ GATEWAY ] CONNECTED")
 
     async def shutdown(self):
         """

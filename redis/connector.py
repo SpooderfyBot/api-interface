@@ -19,8 +19,8 @@ class RedisManager:
         :return:
         """
         for i, coll in enumerate(self._collections, start=1):
-            print(f"[ REDIS ][ STATUS ] Creating pool {coll}")
             self._pools[coll] = await aioredis.create_redis_pool(f"redis://redis:6379/{i}")
+            print(f"[ REDIS ][ STATUS ] Created pool {coll}")
 
     async def shutdown(self):
         for name, pool in self._pools.items():
