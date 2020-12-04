@@ -221,8 +221,8 @@ class GateKeeping(router.Blueprint):
 
     async def shutdown(self):
         """
-        Called when the server begins to shutdown which closes the ws connection
-        and the aiohttp session correctly making everything nice :=)
+        Called when the server begins to shutdown which closes the ws
+        connection and the aiohttp session correctly making everything nice :=)
         """
 
         await self.ws.shutdown()
@@ -244,8 +244,10 @@ class GateKeeping(router.Blueprint):
         The list of user_ids is taken from the POST body of the request.
         """
         for user_id in user_ids:
-            session_id = create_session_id()
-            await redis['session'].set(user_id, session_id)
+            session_id = await redis['session'].get(user_id)
+            if session_id is None:
+                session_id = create_session_id()
+                await redis['session'].set(user_id, session_id)
             try:
                 await self.alter_session(room_id, session_id, ADD_SESSION)
             except ValueError:

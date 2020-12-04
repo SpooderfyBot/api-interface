@@ -12,6 +12,7 @@ create_engine()
 
 APP_FILES = [
     "api.synchronise",
+    "api.auth",
 ]
 
 CACHE_COLLECTIONS = [
