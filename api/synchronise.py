@@ -237,11 +237,8 @@ class MessageChat(BaseGatewayEnabled):
         await self.ws.send({
             "room_id": room_id,
             "message": {
-                "op": OP_PREV,
-                "track": {  # todo add track fetching
-                    "title": "xyz",
-                    "reference_url": "xyz.com",
-                },
+                "op": OP_MESSAGE,
+                "message": msg.dict(),
             }
         })
 
