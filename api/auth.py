@@ -7,7 +7,7 @@ import router
 import logging
 import urllib.parse
 
-from fastapi import responses, FastAPI
+from fastapi import responses, FastAPI, Request
 from gateway import Gateway, gateway_connect
 from models import User
 from redis import redis
@@ -58,7 +58,7 @@ class Authorization(router.Blueprint):
         description="Login via discord.",
         methods=["GET"],
     )
-    async def login(self, redirect_to: t.Optional[str] = None, code: t.Optional[str] = None):
+    async def login(self, request: Request, redirect_to: t.Optional[str] = None, code: t.Optional[str] = None):
         """
         The login api for discord, both logins and redirects are used on this
         endpoint, if code is None it means it is a standard login not  a
@@ -75,6 +75,10 @@ class Authorization(router.Blueprint):
         """
 
         if code is None and redirect_to is not None:
+            existing = request.cookies.get("session")
+            if existing is not None:
+                return responses.RedirectResponse(redirect_to)
+
             url = make_redirect_url()
             resp = responses.RedirectResponse(url)
             resp.set_cookie("redirect_to", redirect_to)
@@ -82,6 +86,21 @@ class Authorization(router.Blueprint):
 
         if code is not None:
             user = await self.get_user(code)
+            if user is None:
+                return responses.ORJSONResponse({
+                    "status": 500,
+                    "message": "discord did not respond correctly",
+                })
+
+            session_id = create_session_id()
+            await redis['session'].set(session_id, user.dict())
+
+            redirect_to = request.cookies.pop("redirect_to", "/home")
+            resp = responses.RedirectResponse(redirect_to)
+            resp.delete_cookie("redirect_to")
+            resp.set_cookie("session", session_id)  # todo set expires
+
+            return resp
 
     async def get_user(self, code) -> t.Optional[User]:
         data = {
