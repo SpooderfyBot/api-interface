@@ -279,10 +279,10 @@ class GateKeeping(BaseGatewayEnabled, router.Blueprint):
         The list of user_ids is taken from the POST body of the request.
         """
         for user_id in user_ids:
-            session_id = await redis['room_session'].get(user_id)
+            session_id = await redis['room_sessions'].get(user_id)
             if session_id is None:
                 session_id = create_session_id()
-                await redis['room_session'].set(user_id, session_id)
+                await redis['room_sessions'].set(user_id, session_id)
             try:
                 await self.alter_session(room_id, session_id, ADD_SESSION)
             except ValueError:
@@ -307,7 +307,7 @@ class GateKeeping(BaseGatewayEnabled, router.Blueprint):
         """
 
         for user_id in user_ids:
-            session_id = await redis['room_session'].get(user_id)
+            session_id = await redis['room_sessions'].get(user_id)
             if session_id is None:
                 continue
 
