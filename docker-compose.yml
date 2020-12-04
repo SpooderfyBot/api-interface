@@ -13,11 +13,13 @@ services:
     - "5050:5050"
     depends_on:
       - redis
-    networks:
-      - spooderfy_network
   redis:
     image: redis
     command: redis-server
     container_name: cache
     ports:
       - "6379:6379"
+networks:
+  default:
+    external:
+      name: spooderfy_network
