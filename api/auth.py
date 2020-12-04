@@ -40,6 +40,18 @@ class Authorization(router.Blueprint):
     def __init__(self, app: FastAPI):
         self.app = app
 
+        self.app.on_event("startup")(self.init_session)
+        self.app.on_event("shutdown")(self.close)
+
+        self.session: t.Optional[aiohttp.ClientSession] = None
+
+    async def init_session(self):
+        self.session = aiohttp.ClientSession()
+
+    async def close(self):
+        if self.session is not None:
+            await self.session.close()
+
     @router.endpoint(
         "/api/login",
         endpoint_name="Discord Login",
@@ -71,8 +83,36 @@ class Authorization(router.Blueprint):
         if code is not None:
             user = await self.get_user(code)
 
-    async def get_user(self, code) -> User:
-        pass
+    async def get_user(self, code) -> t.Optional[User]:
+        data = {
+            'client_id': CLIENT_ID,
+            'client_secret': CLIENT_SECRET,
+            'grant_type': 'authorization_code',
+            'code': code,
+            'redirect_uri': REDIRECT_URL,
+            'scope': 'identify'
+        }
+        headers = {
+            'Content-Type': 'application/x-www-form-urlencoded'
+        }
+
+        async with self.session.post(
+                DISCORD_OAUTH2_TOKEN, data=data, headers=headers
+        ) as resp:
+            if resp != 200:
+                return None
+
+            data = await resp.json()
+
+        async with self.session.get(
+            DISCORD_OAUTH2_USER,
+            headers={"Authorization": "Bearer {}".format(data['access_token'])}
+        ) as resp:
+            if resp != 200:
+                return None
+
+            data = await resp.json()
+            return User(**data)
 
 
 def setup(app):
