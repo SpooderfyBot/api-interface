@@ -1,0 +1,13 @@
+version: '3'
+
+services:
+  spooderfy_website:
+    build: .
+    container_name: spooderfy_website
+    image: spooderfy_website
+    restart: always
+    command: python main.py
+    volumes:
+      - .:/code
+    ports:
+    - "5050:5050"
