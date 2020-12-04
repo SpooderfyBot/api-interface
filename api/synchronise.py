@@ -9,6 +9,7 @@ import logging
 from fastapi import responses, FastAPI
 from gateway import Gateway, gateway_connect
 from models import Message
+from redis import redis
 
 ALTER_ROOM_URL = "http://127.0.0.1:8888/alter?op={}&room_id={}"
 WS_EMITTER_URL = "ws://127.0.0.1:8888/emitters"
