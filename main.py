@@ -54,5 +54,5 @@ if __name__ == '__main__':
         host="0.0.0.0",
         port=5050,
         log_level="critical",
-        workers=mp.cpu_count()
+        # workers=mp.cpu_count()
     )
