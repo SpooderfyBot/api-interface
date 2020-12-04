@@ -50,4 +50,4 @@ router = router.Router(app, APP_FILES, import_callback)
 
 if __name__ == '__main__':
     logging.basicConfig(level=logging.INFO)
-    uvicorn.run("main:app", host="0.0.0.0", port=5052, log_level="info")
+    uvicorn.run("main:app", host="0.0.0.0", port=5050, log_level="info")
