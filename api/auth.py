@@ -1,14 +1,10 @@
-import asyncio
 import os
-import orjson
 import typing as t
 import aiohttp
 import router
-import logging
 import urllib.parse
 
 from fastapi import responses, FastAPI, Request
-from gateway import Gateway, gateway_connect
 from models import User
 from redis import redis
 from utils import create_session_id

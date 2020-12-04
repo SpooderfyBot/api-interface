@@ -1,16 +1,13 @@
-import asyncio
-
-import orjson
 import typing as t
 import aiohttp
 import router
 import logging
 
-from fastapi import responses, FastAPI
+from fastapi import responses, FastAPI, Request
 from gateway import Gateway, gateway_connect
 from models import Message
 from redis import redis
-from utils import create_session_id
+from utils import create_session_id, session_valid, login_required
 
 
 ALTER_ROOM_URL = "http://127.0.0.1:8888/alter?op={}&room_id={}"
@@ -31,6 +28,9 @@ OP_MESSAGE = 5
 
 
 gatekeeper = logging.getLogger("api-gatekeeper")
+
+
+
 
 
 class PlayerEndpoints(router.Blueprint):
@@ -69,13 +69,19 @@ class PlayerEndpoints(router.Blueprint):
         description="Used to play a set player",
         methods=["PUT"],
     )
-    async def play_player(self, room_id: str):
+    async def play_player(self, request: Request, room_id: str):
         """
         Begins the play the player of a specific room.
 
         Authorization is required in order to invoke this endpoint
         otherwise it wont emit to the gateway.
         """
+
+        if not (await session_valid(request)):
+            return responses.ORJSONResponse({
+                "status": 401,
+                "message": "Unauthorized"
+            }, status_code=401)
 
         await self.ws.send({
             "room_id": room_id,
@@ -91,13 +97,19 @@ class PlayerEndpoints(router.Blueprint):
         description="Used to pause a set player",
         methods=["PUT"],
     )
-    async def pause_player(self, room_id: str):
+    async def pause_player(self, request: Request, room_id: str):
         """
         Pauses the player of a specific room.
 
         Authorization is required in order to invoke this endpoint
         otherwise it wont emit to the gateway.
         """
+
+        if not (await session_valid(request)):
+            return responses.ORJSONResponse({
+                "status": 401,
+                "message": "Unauthorized"
+            }, status_code=401)
 
         await self.ws.send({
             "room_id": room_id,
@@ -113,13 +125,19 @@ class PlayerEndpoints(router.Blueprint):
         description="Used to start a seek to a specific player",
         methods=["PUT"],
     )
-    async def seek_player(self, room_id: str, position: int):
+    async def seek_player(self, request: Request, room_id: str, position: int):
         """
         Seeks to a set position of the player of a specific room.
 
         Authorization is required in order to invoke this endpoint
         otherwise it wont emit to the gateway.
         """
+
+        if not (await session_valid(request)):
+            return responses.ORJSONResponse({
+                "status": 401,
+                "message": "Unauthorized"
+            }, status_code=401)
 
         await self.ws.send({
             "room_id": room_id,
@@ -136,13 +154,19 @@ class PlayerEndpoints(router.Blueprint):
         description="Cycles to the next item in a playlist",
         methods=["PUT"],
     )
-    async def next_item(self, room_id: str):
+    async def next_item(self, request: Request, room_id: str):
         """
         Switches to the next track of the player of a specific room.
 
         Authorization is required in order to invoke this endpoint
         otherwise it wont emit to the gateway.
         """
+
+        if not (await session_valid(request)):
+            return responses.ORJSONResponse({
+                "status": 401,
+                "message": "Unauthorized"
+            }, status_code=401)
 
         await self.ws.send({
             "room_id": room_id,
@@ -162,13 +186,19 @@ class PlayerEndpoints(router.Blueprint):
         description="Cycles to the previous item in a playlist",
         methods=["PUT"],
     )
-    async def previous_item(self, room_id: str):
+    async def previous_item(self, request: Request, room_id: str):
         """
         Switches to the previous track of the player of a specific room.
 
         Authorization is required in order to invoke this endpoint
         otherwise it wont emit to the gateway.
         """
+
+        if not (await session_valid(request)):
+            return responses.ORJSONResponse({
+                "status": 401,
+                "message": "Unauthorized"
+            }, status_code=401)
 
         await self.ws.send({
             "room_id": room_id,
@@ -193,8 +223,19 @@ class MessageChat(router.Blueprint):
         description="Send a message to the set chat room.",
         methods=["PUT"],
     )
-    async def send_message(self, room_id: str, msg: Message):
-        print(room_id)
+    async def send_message(self, request: Request, room_id: str, msg: Message):
+        """
+        Sends a message to the give room, this is limited to 2 messages / sec
+        instead of Discord's limit due to the global limit of the webhooks
+        and load on our servers.
+        """
+
+        if not (await session_valid(request)):
+            return responses.ORJSONResponse({
+                "status": 401,
+                "message": "Unauthorized"
+            }, status_code=401)
+
         return responses.ORJSONResponse({"status": 200, "message": "OK"})
 
 
@@ -244,10 +285,10 @@ class GateKeeping(router.Blueprint):
         The list of user_ids is taken from the POST body of the request.
         """
         for user_id in user_ids:
-            session_id = await redis['session'].get(user_id)
+            session_id = await redis['room_session'].get(user_id)
             if session_id is None:
                 session_id = create_session_id()
-                await redis['session'].set(user_id, session_id)
+                await redis['room_session'].set(user_id, session_id)
             try:
                 await self.alter_session(room_id, session_id, ADD_SESSION)
             except ValueError:
@@ -272,7 +313,7 @@ class GateKeeping(router.Blueprint):
         """
 
         for user_id in user_ids:
-            session_id = await redis['session'].get(user_id)
+            session_id = await redis['room_session'].get(user_id)
             if session_id is None:
                 continue
 
