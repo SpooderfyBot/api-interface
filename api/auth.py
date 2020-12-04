@@ -119,7 +119,9 @@ class Authorization(router.Blueprint):
         }
 
         async with self.session.post(
-                DISCORD_OAUTH2_TOKEN, data=data, headers=headers
+                DISCORD_BASE_URL + DISCORD_OAUTH2_TOKEN,
+                data=data,
+                headers=headers,
         ) as resp:
             if resp != 200:
                 return None
