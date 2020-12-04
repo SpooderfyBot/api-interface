@@ -1,0 +1,9 @@
+orjson
+aiohttp
+aioredis
+uvicorn
+sqlalchemy
+databases
+aiosqlite
+asyncpg
+fastapi
