@@ -18,7 +18,7 @@ REDIRECT_URL = "https://spooderfy.com/api/login"
 DISCORD_BASE_URL = "https://discord.com/api"
 DISCORD_OAUTH2_AUTH = "/oauth2/authorize"
 DISCORD_OAUTH2_USER = "/users/@me"
-DISCORD_OAUTH2_TOKEN = "/users/token"
+DISCORD_OAUTH2_TOKEN = "/oauth2/token"
 
 
 def make_redirect_url() -> str:

@@ -10,7 +10,7 @@ services:
     volumes:
       - .:/code
     ports:
-    - "5050:5050"
+      - "5050:5050"
     depends_on:
       - redis
   redis:
