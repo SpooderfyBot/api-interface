@@ -38,6 +38,7 @@ app = FastAPI(
     description="The Discord bot for all your movie needs.",
     docs_url=None,
     redoc_url="/api/docs",
+    root_path="/api"
 )
 
 
