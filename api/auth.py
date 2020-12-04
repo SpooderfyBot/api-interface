@@ -111,17 +111,15 @@ class Authorization(router.Blueprint):
             'client_secret': CLIENT_SECRET,
             'grant_type': 'authorization_code',
             'code': code,
-            'redirect_uri': REDIRECT_URL,
+            'redirect_uri': urllib.parse.quote(REDIRECT_URL, safe=''),
             'scope': 'identify'
         }
-        headers = {
-            'Content-Type': 'application/x-www-form-urlencoded'
-        }
+
+        query = f"?client_id={CLIENT_ID}"
+        query += "&".join([f"{k}={v}" for k, v in data.items()])
 
         async with self.session.post(
-                DISCORD_BASE_URL + DISCORD_OAUTH2_TOKEN,
-                data=data,
-                headers=headers,
+                DISCORD_BASE_URL + DISCORD_OAUTH2_TOKEN + query,
         ) as resp:
             if resp != 200:
                 return None
