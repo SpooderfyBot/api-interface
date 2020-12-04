@@ -30,10 +30,7 @@ OP_MESSAGE = 5
 gatekeeper = logging.getLogger("api-gatekeeper")
 
 
-
-
-
-class PlayerEndpoints(router.Blueprint):
+class BaseGatewayEnabled(router.Blueprint):
     def __init__(self, app: FastAPI):
         self.app = app
 
@@ -62,6 +59,9 @@ class PlayerEndpoints(router.Blueprint):
 
         await self.ws.shutdown()
         await self.session.close()
+
+
+class PlayerEndpoints(BaseGatewayEnabled):
 
     @router.endpoint(
         "/api/player/{room_id:str}/play",
@@ -213,9 +213,7 @@ class PlayerEndpoints(router.Blueprint):
         return responses.ORJSONResponse({"status": 200, "message": "OK"})
 
 
-class MessageChat(router.Blueprint):
-    def __init__(self, app):
-        self.app = app
+class MessageChat(BaseGatewayEnabled):
 
     @router.endpoint(
         "/api/room/{room_id:str}/message",
@@ -236,38 +234,21 @@ class MessageChat(router.Blueprint):
                 "message": "Unauthorized"
             }, status_code=401)
 
+        await self.ws.send({
+            "room_id": room_id,
+            "message": {
+                "op": OP_PREV,
+                "track": {  # todo add track fetching
+                    "title": "xyz",
+                    "reference_url": "xyz.com",
+                },
+            }
+        })
+
         return responses.ORJSONResponse({"status": 200, "message": "OK"})
 
 
-class GateKeeping(router.Blueprint):
-    def __init__(self, app: FastAPI):
-        self.app = app
-
-        # Startup - Shutdown
-        self.app.on_event("startup")(self.start_up)
-        self.app.on_event("shutdown")(self.shutdown)
-
-        self.ws: t.Optional[Gateway] = None
-        self.session: t.Optional[aiohttp.ClientSession] = None
-
-    async def start_up(self):
-        """
-        Called when the first is first started and loads,
-        this allows us to start our connection to the gateway as an
-        emitter and also create a session that we can use later on.
-        """
-
-        self.session = aiohttp.ClientSession()
-        self.ws = await gateway_connect(WS_EMITTER_URL)
-
-    async def shutdown(self):
-        """
-        Called when the server begins to shutdown which closes the ws
-        connection and the aiohttp session correctly making everything nice :=)
-        """
-
-        await self.ws.shutdown()
-        await self.session.close()
+class GateKeeping(BaseGatewayEnabled):
 
     @router.endpoint(
         "/api/room/{room_id:str}/add/user",

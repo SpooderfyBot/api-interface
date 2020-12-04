@@ -54,7 +54,12 @@ class Authorization(router.Blueprint):
         description="Login via discord.",
         methods=["GET"],
     )
-    async def login(self, request: Request, redirect_to: t.Optional[str] = None, code: t.Optional[str] = None):
+    async def login(
+            self,
+            request: Request,
+            redirect_to: t.Optional[str] = None,
+            code: t.Optional[str] = None
+    ):
         """
         The login api for discord, both logins and redirects are used on this
         endpoint, if code is None it means it is a standard login not  a
@@ -121,7 +126,7 @@ class Authorization(router.Blueprint):
 
         async with self.session.get(
             DISCORD_OAUTH2_USER,
-            headers={"Authorization": "Bearer {}".format(data['access_token'])}
+            headers={"Authorization": f"Bearer {data['access_token']}"}
         ) as resp:
             if resp != 200:
                 return None
