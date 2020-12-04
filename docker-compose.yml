@@ -13,9 +13,6 @@ services:
       - "5050:5050"
     depends_on:
       - redis
-    environment:
-      - DISCORD_CLIENT_ID=585225058683977750
-      - DISCORD_CLIENT_SECRET=OAu-3IWILxqe5Q3-uhrs5BXzzPX4aoie
   redis:
     image: redis
     command: redis-server
