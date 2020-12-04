@@ -5,7 +5,7 @@ import logging
 
 from fastapi import responses, FastAPI, Request
 from gateway import Gateway, gateway_connect
-from models import Message
+from models import Message, User
 from redis import redis
 from utils import create_session_id, session_valid, login_required
 
@@ -13,6 +13,8 @@ from utils import create_session_id, session_valid, login_required
 ALTER_ROOM_URL = "http://127.0.0.1:8888/alter?op={}&room_id={}"
 WS_EMITTER_URL = "ws://127.0.0.1:8888/emitters"
 
+DISCORD_AVATAR = "https://images.discordapp.net/avatars/" \
+                 "{user_id}/{avatar}.png?size=512"
 
 CREATE = "create"
 DELETE = "delete"
@@ -228,17 +230,30 @@ class MessageChat(BaseGatewayEnabled):
         and load on our servers.
         """
 
-        if not (await session_valid(request)):
+        session_id = request.cookies.get("session")
+        if session_id is None:
             return responses.ORJSONResponse({
                 "status": 401,
                 "message": "Unauthorized"
             }, status_code=401)
+
+        session = await redis['session'].get(session_id)
+        if session is None:
+            return responses.ORJSONResponse({
+                "status": 401,
+                "message": "Unauthorized"
+            }, status_code=401)
+
+        user = User(**session)
 
         await self.ws.send({
             "room_id": room_id,
             "message": {
                 "op": OP_MESSAGE,
                 "message": msg.dict(),
+                "user_id": user.id,
+                "username": user.username,
+                "avatar": DISCORD_AVATAR.format(user.id, user.avatar),
             }
         })
 
