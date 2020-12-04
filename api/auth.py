@@ -77,6 +77,7 @@ class Authorization(router.Blueprint):
 
         if code is None:
             existing = request.cookies.get("session")
+            print(existing)
             if existing is not None:
                 return responses.RedirectResponse(redirect_to)
 
