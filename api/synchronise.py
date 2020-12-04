@@ -10,8 +10,8 @@ from redis import redis
 from utils import create_session_id, session_valid
 
 
-ALTER_ROOM_URL = "http:///192.168.32.1:5051/alter?op={}&room_id={}"
-WS_EMITTER_URL = "ws://192.168.32.1:5051/emitters"
+ALTER_ROOM_URL = "http:///spooderfy_gateway:5051/alter?op={}&room_id={}"
+WS_EMITTER_URL = "ws://spooderfy_gateway:5051/emitters"
 
 DISCORD_AVATAR = "https://images.discordapp.net/avatars/" \
                  "{user_id}/{avatar}.png?size=512"
