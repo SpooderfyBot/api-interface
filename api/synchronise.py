@@ -263,15 +263,6 @@ class MessageChat(BaseGatewayEnabled, router.Blueprint):
 
 class GateKeeping(BaseGatewayEnabled, router.Blueprint):
     @router.endpoint(
-        "/api/create/room",
-        endpoint_name="Create Room",
-        description="Creates a room given the required data",
-        methods=["POST"],
-    )
-    async def create_room(self):
-        pass
-
-    @router.endpoint(
         "/api/room/{room_id:str}/delete",
         endpoint_name="Delete Room",
         description="Deletes and terminates the room session, any existing"
@@ -279,6 +270,24 @@ class GateKeeping(BaseGatewayEnabled, router.Blueprint):
         methods=["DELETE"],
     )
     async def delete_room(self):
+        """
+        Deletes and terminates the room session, any existing
+        connections to the gateway will be terminated and closed.
+        """
+        pass
+
+    @router.endpoint(
+        "/api/create/room",
+        endpoint_name="Create Room",
+        description="Creates a room given the required data",
+        methods=["POST"],
+    )
+    async def create_room(self):
+        """
+        Creates a room given that the relevant data is given by the POST
+        body of the request. A responding payload will be sent back giving
+        the room info like Id.
+        """
         pass
 
     @router.endpoint(
@@ -351,6 +360,7 @@ class GateKeeping(BaseGatewayEnabled, router.Blueprint):
                     msg=f"Error handling session status: {resp.status}",
                 )
                 raise ValueError("Status Invalid")
+
 
 
 def setup(app):
