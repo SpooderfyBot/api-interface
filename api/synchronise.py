@@ -263,20 +263,6 @@ class MessageChat(BaseGatewayEnabled, router.Blueprint):
 
 class GateKeeping(BaseGatewayEnabled, router.Blueprint):
     @router.endpoint(
-        "/api/room/{room_id:str}/delete",
-        endpoint_name="Delete Room",
-        description="Deletes and terminates the room session, any existing"
-                    "connections to the gateway will be terminated and closed.",
-        methods=["DELETE"],
-    )
-    async def delete_room(self):
-        """
-        Deletes and terminates the room session, any existing
-        connections to the gateway will be terminated and closed.
-        """
-        pass
-
-    @router.endpoint(
         "/api/create/room",
         endpoint_name="Create Room",
         description="Creates a room given the required data",
@@ -289,6 +275,28 @@ class GateKeeping(BaseGatewayEnabled, router.Blueprint):
         the room info like Id.
         """
         pass
+
+    @router.endpoint(
+        "/api/room/{room_id:str}/delete",
+        endpoint_name="Delete Room",
+        description="Deletes and terminates the room session, any existing"
+                    "connections to the gateway will be terminated and closed.",
+        methods=["DELETE"],
+    )
+    async def delete_room(self):
+        """
+        Deletes and terminates the room session, any existing
+        connections to the gateway will be terminated and closed.
+        """
+
+
+        try:
+            await self.alter_gateway()
+        except ValueError:
+            return responses.ORJSONResponse({
+                "status": 500,
+                "message": "Gateway responded with 4xx or 5xx code."
+            })
 
     @router.endpoint(
         "/api/room/{room_id:str}/add/user",
@@ -305,6 +313,10 @@ class GateKeeping(BaseGatewayEnabled, router.Blueprint):
 
         The list of user_ids is taken from the POST body of the request.
         """
+
+        # Its a hack i know but i dont really want to make an entire system
+        # on the gateway just for adding sessions instead of the existing
+        # alter endpoint.
         for user_id in user_ids:
             session_id = await redis['room_sessions'].get(user_id)
             if session_id is None:
@@ -333,6 +345,9 @@ class GateKeeping(BaseGatewayEnabled, router.Blueprint):
         protected endpoint this should be alright.
         """
 
+        # Its a hack i know but i dont really want to make an entire system
+        # on the gateway just for adding sessions instead of the existing
+        # alter endpoint.
         for user_id in user_ids:
             session_id = await redis['room_sessions'].get(user_id)
             if session_id is None:
@@ -349,10 +364,14 @@ class GateKeeping(BaseGatewayEnabled, router.Blueprint):
         return responses.ORJSONResponse({"status": 200, "message": "OK"})
 
     async def alter_session(self, room_id: str, session_id: str, op: str):
-        # Its a hack i know but i dont really want to make an entire system
-        # on the gateway just for adding sessions instead of the existing
-        # alter endpoint.
         url = (ALTER_ROOM_URL + "&session_id={}").format(op, room_id, session_id)
+        await self._post(url)
+
+    async def alter_gateway(self, room_id: str, op: str):
+        url = ALTER_ROOM_URL.format(op, room_id)
+        await self._post(url)
+
+    async def _post(self, url):
         async with self.session.post(url) as resp:
             if resp.status >= 400:
                 gatekeeper.log(
