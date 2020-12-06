@@ -29,6 +29,7 @@ class RedisManager:
             await pool.wait_closed()
 
     def __getitem__(self, item) -> aioredis.Redis:
+        print(self._pools, item)
         return self._pools[item]
 
 
