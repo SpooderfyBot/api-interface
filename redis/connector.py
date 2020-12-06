@@ -33,12 +33,13 @@ class RedisManager:
         return self._pools[item]
 
 
-redis: RedisManager = RedisManager([])
+redis: RedisManager = None
 
 
 def create_cache_engine(collections: t.List[str]):
     global redis
     redis = RedisManager(collections)
+    print(redis._collections)
 
 
 async def create_cache():
