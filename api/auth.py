@@ -86,7 +86,6 @@ class Authorization(router.Blueprint):
             resp.set_cookie("redirect_to", redirect_to)
             return resp
         else:
-            print(repr(code))
             user = await self.get_user(code)
             if user is None:
                 return responses.ORJSONResponse({
@@ -124,11 +123,11 @@ class Authorization(router.Blueprint):
                 data=data,
                 headers=headers,
         ) as resp:
-            data = await resp.json()
-            print(data)
 
-            if resp != 200:
+            if resp.status >= 400:
                 return None
+
+            data = await resp.json()
 
         async with self.session.get(
             DISCORD_BASE_URL + DISCORD_OAUTH2_USER,
@@ -138,6 +137,7 @@ class Authorization(router.Blueprint):
                 return None
 
             data = await resp.json()
+            print(data)
             return User(**data)
 
 
