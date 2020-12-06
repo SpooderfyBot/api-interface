@@ -10,7 +10,7 @@ async def session_valid(request: Request) -> bool:
     if session_id is None:
         return False
 
-    session = await redis['session'].get(session_id)
+    session = await redis['sessions'].get(session_id)
     return session is not None
 
 
@@ -30,7 +30,7 @@ def login_required(func):
             resp.set_cookie("redirect_to", url.path)
             return resp
 
-        session = await redis['session'].get(session_id)
+        session = await redis['sessions'].get(session_id)
         if session is None:
             url = request.url
             resp = responses.RedirectResponse(f"/api/login")

@@ -96,7 +96,7 @@ class Authorization(router.Blueprint):
             print(user)
 
             session_id = create_session_id()
-            await redis['session'].set(session_id, user.dict())
+            await redis['sessions'].set(session_id, user.dict())
 
             redirect_to = request.cookies.pop("redirect_to", "/home")
             resp = responses.RedirectResponse(redirect_to)
@@ -123,21 +123,21 @@ class Authorization(router.Blueprint):
                 data=data,
                 headers=headers,
         ) as resp:
-            data = await resp.json()
-            print(data)
 
             if resp.status >= 400:
                 return None
+
+            data = await resp.json()
 
         async with self.session.get(
             DISCORD_BASE_URL + DISCORD_OAUTH2_USER,
             headers={"Authorization": f"Bearer {data['access_token']}"}
         ) as resp:
-            data = await resp.json()
-            print(data)
 
             if resp.status >= 400:
                 return None
+
+            data = await resp.json()
 
             return User(**data)
 
