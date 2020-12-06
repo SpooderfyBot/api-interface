@@ -6,9 +6,7 @@ import multiprocessing as mp
 from fastapi import FastAPI
 
 from database import create_engine
-from redis import create_cache
-
-create_engine()
+from redis import create_cache, create_cache_engine
 
 APP_FILES = [
     "api.synchronise",
@@ -19,6 +17,9 @@ CACHE_COLLECTIONS = [
     "sessions",
     "room_sessions"
 ]
+
+create_engine()
+create_cache_engine(CACHE_COLLECTIONS)
 
 
 def import_callback(app_: FastAPI, endpoint: t.Union[router.Endpoint, router.Websocket]):
@@ -44,7 +45,7 @@ app = FastAPI(
 
 @app.on_event("startup")
 async def init():
-    await create_cache(CACHE_COLLECTIONS)
+    await create_cache()
 
 
 router = router.Router(app, APP_FILES, import_callback)

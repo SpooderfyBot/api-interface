@@ -36,8 +36,11 @@ class RedisManager:
 redis: RedisManager = RedisManager([])
 
 
-async def create_cache(collections: t.List[str]):
+def create_cache_engine(collections: t.List[str]):
     global redis
+    redis: RedisManager = RedisManager(collections)
 
-    redis = RedisManager(collections)
+
+async def create_cache():
+    global redis
     await redis.setup()
