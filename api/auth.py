@@ -96,7 +96,7 @@ class Authorization(router.Blueprint):
             print(user)
 
             session_id = create_session_id()
-            await redis['sessions'].set(session_id, user.dict())
+            await redis['sessions'].set(session_id, user.json())
 
             redirect_to = request.cookies.pop("redirect_to", "/home")
             resp = responses.RedirectResponse(redirect_to)

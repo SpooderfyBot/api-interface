@@ -1,6 +1,7 @@
 import uvicorn
 import typing as t
 import router
+import asyncio
 import multiprocessing as mp
 
 from fastapi import FastAPI
@@ -19,7 +20,6 @@ CACHE_COLLECTIONS = [
 ]
 
 create_engine()
-
 create_cache_engine(CACHE_COLLECTIONS)
 
 
@@ -46,7 +46,7 @@ app = FastAPI(
 
 @app.on_event("startup")
 async def init():
-    await create_cache()
+    await asyncio.shield(create_cache())
 
 
 router = router.Router(app, APP_FILES, import_callback)
