@@ -8,9 +8,10 @@ class RedisManager:
     This manages all the redis systems to make is easy to dynamically create
     cache stores without having to manually make a new attr every time.
     """
-    def __init__(self, collections: t.List[str]):
+    _collections = []
+
+    def __init__(self):
         self._pools: t.Dict[str, aioredis.Redis] = {}
-        self._collections = collections
 
     async def setup(self):
         """
@@ -33,13 +34,12 @@ class RedisManager:
         return self._pools[item]
 
 
-redis: RedisManager = None
+redis: RedisManager = RedisManager()
 
 
 def create_cache_engine(collections: t.List[str]):
     global redis
-    redis = RedisManager(collections)
-    print(redis._collections)
+    redis._collections.extend(collections)
 
 
 async def create_cache():
