@@ -93,8 +93,6 @@ class Authorization(router.Blueprint):
                     "message": "discord did not respond correctly",
                 })
 
-            print(user)
-
             session_id = create_session_id()
             await redis['sessions'].set(session_id, user.json())
 
