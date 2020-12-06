@@ -6,7 +6,7 @@ import multiprocessing as mp
 from fastapi import FastAPI
 
 from database import create_engine
-from redis import create_cache, create_cache_engine, redis
+from redis import create_cache, create_cache_engine, cache_reload
 
 APP_FILES = [
     "api.synchronise",
@@ -19,7 +19,11 @@ CACHE_COLLECTIONS = [
 ]
 
 create_engine()
+
 create_cache_engine(CACHE_COLLECTIONS)
+cache_reload()
+
+from redis import redis
 
 print(redis._collections)
 
