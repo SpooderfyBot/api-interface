@@ -123,21 +123,22 @@ class Authorization(router.Blueprint):
                 data=data,
                 headers=headers,
         ) as resp:
+            data = await resp.json()
+            print(data)
 
             if resp.status >= 400:
                 return None
-
-            data = await resp.json()
 
         async with self.session.get(
             DISCORD_BASE_URL + DISCORD_OAUTH2_USER,
             headers={"Authorization": f"Bearer {data['access_token']}"}
         ) as resp:
-            if resp != 200:
-                return None
-
             data = await resp.json()
             print(data)
+
+            if resp.status >= 400:
+                return None
+
             return User(**data)
 
 
