@@ -7,7 +7,7 @@ from fastapi import responses, FastAPI, Request
 from gateway import Gateway, gateway_connect
 from models import Message, User
 from redis import redis
-from utils import create_session_id, session_valid
+from utils import create_session_id, create_room_id, session_valid
 
 
 ALTER_ROOM_URL = "http:///spooderfy_gateway:5051/alter?op={}&room_id={}"
@@ -274,7 +274,16 @@ class GateKeeping(BaseGatewayEnabled, router.Blueprint):
         body of the request. A responding payload will be sent back giving
         the room info like Id.
         """
-        pass
+
+        room_id = create_room_id()
+
+        try:
+            await self.alter_gateway(room_id, CREATE)
+        except ValueError:
+            return responses.ORJSONResponse({
+                "status": 500,
+                "message": "Gateway responded with 4xx or 5xx code."
+            })
 
     @router.endpoint(
         "/api/room/{room_id:str}/delete",
@@ -283,15 +292,14 @@ class GateKeeping(BaseGatewayEnabled, router.Blueprint):
                     "connections to the gateway will be terminated and closed.",
         methods=["DELETE"],
     )
-    async def delete_room(self):
+    async def delete_room(self, room_id: str):
         """
         Deletes and terminates the room session, any existing
         connections to the gateway will be terminated and closed.
         """
 
-
         try:
-            await self.alter_gateway()
+            await self.alter_gateway(room_id, DELETE)
         except ValueError:
             return responses.ORJSONResponse({
                 "status": 500,
@@ -364,10 +372,21 @@ class GateKeeping(BaseGatewayEnabled, router.Blueprint):
         return responses.ORJSONResponse({"status": 200, "message": "OK"})
 
     async def alter_session(self, room_id: str, session_id: str, op: str):
+        """
+        Exposes the alter endpoint with the session query parameters for
+        adding or removing the sessions.
+        """
+
         url = (ALTER_ROOM_URL + "&session_id={}").format(op, room_id, session_id)
         await self._post(url)
 
     async def alter_gateway(self, room_id: str, op: str):
+        """
+        Exposes the alter endpoint of the gateway HTTP endpoint, this
+        ignores the session query however so use alter_session for session
+        based systems.
+        """
+
         url = ALTER_ROOM_URL.format(op, room_id)
         await self._post(url)
 
