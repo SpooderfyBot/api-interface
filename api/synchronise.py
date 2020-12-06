@@ -296,6 +296,10 @@ class GateKeeping(BaseGatewayEnabled, router.Blueprint):
         """
         Deletes and terminates the room session, any existing
         connections to the gateway will be terminated and closed.
+
+
+        Todo: Add redis to check if the room exists or not, maybe make this
+        Todo: into a decorator.
         """
 
         try:

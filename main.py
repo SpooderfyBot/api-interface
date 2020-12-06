@@ -15,6 +15,7 @@ APP_FILES = [
 ]
 
 CACHE_COLLECTIONS = [
+    "rooms"
     "sessions",
     "room_sessions"
 ]
