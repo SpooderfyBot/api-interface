@@ -238,7 +238,7 @@ class MessageChat(BaseGatewayEnabled, router.Blueprint):
                 "message": "Unauthorized"
             }, status_code=401)
 
-        session = await redis['session'].get(session_id)
+        session = await redis['sessions'].get(session_id)
         if session is None:
             return responses.ORJSONResponse({
                 "status": 401,
@@ -251,7 +251,7 @@ class MessageChat(BaseGatewayEnabled, router.Blueprint):
             "room_id": room_id,
             "message": {
                 "op": OP_MESSAGE,
-                "message": msg.dict(),
+                "content": msg.content,
                 "user_id": user.id,
                 "username": user.username,
                 "avatar": DISCORD_AVATAR.format(user.id, user.avatar),
