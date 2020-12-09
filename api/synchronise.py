@@ -404,7 +404,6 @@ class GateKeeping(BaseGatewayEnabled, router.Blueprint):
                 raise ValueError("Status Invalid")
 
 
-
 def setup(app):
     app.add_blueprint(PlayerEndpoints(app))
     app.add_blueprint(MessageChat(app))
