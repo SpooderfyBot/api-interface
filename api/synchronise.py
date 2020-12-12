@@ -342,6 +342,10 @@ class GateKeeping(BaseGatewayEnabled, router.Blueprint):
         The list of user_ids is taken from the POST body of the request.
         """
 
+        response_ids = {
+
+        }
+
         # Its a hack i know but i dont really want to make an entire system
         # on the gateway just for adding sessions instead of the existing
         # alter endpoint.
@@ -350,6 +354,9 @@ class GateKeeping(BaseGatewayEnabled, router.Blueprint):
             if session_id is None:
                 session_id = create_session_id()
                 await redis['room_sessions'].set(user_id, session_id)
+
+            response_ids[user_id] = session_id
+
             try:
                 await self.alter_session(room_id, session_id, ADD_SESSION)
             except RoomUnknown:
@@ -363,7 +370,11 @@ class GateKeeping(BaseGatewayEnabled, router.Blueprint):
                     "message": "Gateway responded with 4xx or 5xx code."
                 })
 
-        return responses.ORJSONResponse({"status": 200, "message": "OK"})
+        return responses.ORJSONResponse({
+            "status": 200,
+            "message": "OK",
+            "sessions": response_ids
+        })
 
     @router.endpoint(
         "/api/room/{room_id:str}/remove/user",
