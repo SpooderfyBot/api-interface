@@ -4,7 +4,7 @@ import router
 import logging
 
 from fastapi import responses, FastAPI, Request
-from gateway import Gateway, gateway_connect
+from gateway import Gateway, gateway_connect, GatewayException, RoomUnknown
 from models import Message, User
 from redis import redis
 from utils import create_session_id, create_room_id, session_valid
@@ -279,7 +279,7 @@ class GateKeeping(BaseGatewayEnabled, router.Blueprint):
 
         try:
             await self.alter_gateway(room_id, CREATE)
-        except ValueError:
+        except GatewayException:
             return responses.ORJSONResponse({
                 "status": 500,
                 "message": "Gateway responded with 4xx or 5xx code."
@@ -304,7 +304,12 @@ class GateKeeping(BaseGatewayEnabled, router.Blueprint):
 
         try:
             await self.alter_gateway(room_id, DELETE)
-        except ValueError:
+        except RoomUnknown:
+            return responses.ORJSONResponse({
+                "status": 404,
+                "message": "This room does not exist."
+            })
+        except GatewayException:
             return responses.ORJSONResponse({
                 "status": 500,
                 "message": "Gateway responded with 4xx or 5xx code."
@@ -336,10 +341,15 @@ class GateKeeping(BaseGatewayEnabled, router.Blueprint):
                 await redis['room_sessions'].set(user_id, session_id)
             try:
                 await self.alter_session(room_id, session_id, ADD_SESSION)
-            except ValueError:
+            except RoomUnknown:
+                return responses.ORJSONResponse({
+                    "status": 404,
+                    "message": "This room does not exist."
+                })
+            except GatewayException:
                 return responses.ORJSONResponse({
                     "status": 500,
-                    "message": "Error handling session with gateway."
+                    "message": "Gateway responded with 4xx or 5xx code."
                 })
 
         return responses.ORJSONResponse({"status": 200, "message": "OK"})
@@ -367,10 +377,15 @@ class GateKeeping(BaseGatewayEnabled, router.Blueprint):
 
             try:
                 await self.alter_session(room_id, session_id, REMOVE_SESSION)
-            except ValueError:
+            except RoomUnknown:
+                return responses.ORJSONResponse({
+                    "status": 404,
+                    "message": "This room does not exist."
+                })
+            except GatewayException:
                 return responses.ORJSONResponse({
                     "status": 500,
-                    "message": "Error handling session with gateway."
+                    "message": "Gateway responded with 4xx or 5xx code."
                 })
 
         return responses.ORJSONResponse({"status": 200, "message": "OK"})
@@ -396,12 +411,14 @@ class GateKeeping(BaseGatewayEnabled, router.Blueprint):
 
     async def _post(self, url):
         async with self.session.post(url) as resp:
-            if resp.status >= 400:
+            if resp.status == 404:
+                raise RoomUnknown()
+            elif resp.status >= 400:
                 gatekeeper.log(
                     level=logging.FATAL,
                     msg=f"Error handling session status: {resp.status}",
                 )
-                raise ValueError("Status Invalid")
+                raise GatewayException("Status Invalid")
 
 
 def setup(app):
