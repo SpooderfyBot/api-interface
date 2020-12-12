@@ -285,6 +285,8 @@ class GateKeeping(BaseGatewayEnabled, router.Blueprint):
                 "message": "Gateway responded with 4xx or 5xx code."
             })
 
+        return {"status": 200, "message": "Room Created!", "room_id": room_id}
+
     @router.endpoint(
         "/api/room/{room_id:str}/delete",
         endpoint_name="Delete Room",
