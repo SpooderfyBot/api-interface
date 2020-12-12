@@ -285,7 +285,11 @@ class GateKeeping(BaseGatewayEnabled, router.Blueprint):
                 "message": "Gateway responded with 4xx or 5xx code."
             })
 
-        return {"status": 200, "message": "Room Created!", "room_id": room_id}
+        return responses.ORJSONResponse({
+            "status": 200,
+            "message": "Room Created!",
+            "room_id": room_id
+        })
 
     @router.endpoint(
         "/api/room/{room_id:str}/delete",
@@ -316,6 +320,11 @@ class GateKeeping(BaseGatewayEnabled, router.Blueprint):
                 "status": 500,
                 "message": "Gateway responded with 4xx or 5xx code."
             })
+
+        return responses.ORJSONResponse({
+            "status": 200,
+            "message": "Room deleted",
+        })
 
     @router.endpoint(
         "/api/room/{room_id:str}/add/user",
