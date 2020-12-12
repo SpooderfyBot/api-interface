@@ -350,10 +350,8 @@ class GateKeeping(BaseGatewayEnabled, router.Blueprint):
         # on the gateway just for adding sessions instead of the existing
         # alter endpoint.
         for user_id in user_ids:
-            session_id = await redis['room_sessions'].get(user_id)
-            if session_id is None:
-                session_id = create_session_id()
-                await redis['room_sessions'].set(user_id, session_id)
+            session_id = create_session_id()
+            await redis['room_sessions'].set(user_id, session_id)
 
             response_ids[user_id] = session_id
 
@@ -396,6 +394,8 @@ class GateKeeping(BaseGatewayEnabled, router.Blueprint):
             session_id = await redis['room_sessions'].get(user_id)
             if session_id is None:
                 continue
+
+            session_id = session_id.decode()
 
             try:
                 await self.alter_session(room_id, session_id, REMOVE_SESSION)
