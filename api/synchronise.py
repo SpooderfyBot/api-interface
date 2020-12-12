@@ -332,7 +332,7 @@ class GateKeeping(BaseGatewayEnabled, router.Blueprint):
         description="Add one or several users to the room.",
         methods=["POST"],
     )
-    async def add_user(self, room_id: str, user_ids: t.List[int]):
+    async def add_user(self, room_id: str, user_ids: t.List[str]):
         """
         Add user can take a list of user ids that are then given a
         session id, the session id is a randomly general string that is used
@@ -382,7 +382,7 @@ class GateKeeping(BaseGatewayEnabled, router.Blueprint):
         description="Remove one or several users to the room.",
         methods=["POST"],
     )
-    async def remove_user(self, room_id: str, user_ids: t.List[int]):
+    async def remove_user(self, room_id: str, user_ids: t.List[str]):
         """
         Removes a set of user ids from a room, this will actually just
         remove the session ids linked with the user id, because this is a
