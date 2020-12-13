@@ -9,7 +9,11 @@ from fastapi import responses, FastAPI, Request
 from gateway import Gateway, gateway_connect, GatewayException, RoomUnknown
 from models import Message, User
 from redis import redis
-from utils import create_session_id, create_room_id, session_valid
+from utils import (
+    create_session_id,
+    create_room_id,
+    session_valid,
+)
 
 
 ALTER_ROOM_URL = "http://spooderfy_gateway:5051/alter?op={}&room_id={}"
@@ -347,9 +351,7 @@ class GateKeeping(BaseGatewayEnabled, router.Blueprint):
         The list of user_ids is taken from the POST body of the request.
         """
 
-        response_ids = {
-
-        }
+        response_ids = {}
 
         # Its a hack i know but i dont really want to make an entire system
         # on the gateway just for adding sessions instead of the existing
@@ -404,6 +406,7 @@ class GateKeeping(BaseGatewayEnabled, router.Blueprint):
 
             try:
                 await self.alter_session(room_id, session_id, REMOVE_SESSION)
+                await redis['room_sessions'].delete(user_id)
             except RoomUnknown:
                 return responses.ORJSONResponse({
                     "status": 404,
