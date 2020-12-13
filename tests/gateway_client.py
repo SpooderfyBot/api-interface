@@ -21,7 +21,6 @@ async def main():
         "ws://127.0.0.1:5051/ws"
         "?id=nvs34"
         "&session=1234",
-        heartbeat=5
     )
     print("connected")
 
