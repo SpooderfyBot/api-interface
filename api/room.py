@@ -37,6 +37,14 @@ class RoomServe(router.Blueprint):
                 "status": 401,
                 "message": "Unauthorized"
             }, status_code=401)
+
+        does_exist = await redis['rooms'].get(room_id)
+        if does_exist is None:
+            return responses.ORJSONResponse({
+                "status": 404,
+                "message": "Not Found"
+            }, status_code=404)
+
         return responses.HTMLResponse(room)
 
 

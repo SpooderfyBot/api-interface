@@ -287,6 +287,7 @@ class GateKeeping(BaseGatewayEnabled, router.Blueprint):
 
         try:
             await self.alter_gateway(room_id, CREATE)
+            await redis['rooms'].set(room_id, "")
         except GatewayException:
             return responses.ORJSONResponse({
                 "status": 500,
@@ -318,6 +319,7 @@ class GateKeeping(BaseGatewayEnabled, router.Blueprint):
 
         try:
             await self.alter_gateway(room_id, DELETE)
+            await redis['rooms'].delete(room_id, "")
         except RoomUnknown:
             return responses.ORJSONResponse({
                 "status": 404,
