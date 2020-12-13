@@ -22,8 +22,8 @@ def login_required(func):
     """
 
     @wraps(func)
-    async def wrapper(request: Request, *args, **kwargs):
-        kwargs.pop("request", None)
+    async def wrapper(*args, **kwargs):
+        request = kwargs.get("request")
 
         session_id = request.cookies.get("session")
         if session_id is None:
@@ -38,7 +38,7 @@ def login_required(func):
             resp = responses.RedirectResponse(f"/api/login")
             resp.set_cookie("redirect_to", url.path)
             return resp
-        return await func(request, *args, **kwargs)
+        return await func(*args, **kwargs)
     return wrapper
 
 
