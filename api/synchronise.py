@@ -225,7 +225,6 @@ class PlayerEndpoints(BaseGatewayEnabled, router.Blueprint):
 
 
 class MessageChat(BaseGatewayEnabled, router.Blueprint):
-
     @router.endpoint(
         "/api/room/{room_id:str}/message",
         endpoint_name="Send Message",
