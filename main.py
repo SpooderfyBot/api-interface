@@ -12,7 +12,8 @@ from redis import create_cache, create_cache_engine
 APP_FILES = [
     "api.synchronise",
     "api.auth",
-    "api.user_interactions"
+    "api.user_interactions",
+    "api.room",
 ]
 
 CACHE_COLLECTIONS = [
