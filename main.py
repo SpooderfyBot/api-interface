@@ -20,8 +20,10 @@ CACHE_COLLECTIONS = [
     "room_sessions"
 ]
 
-create_engine()
-create_cache_engine(CACHE_COLLECTIONS)
+if __name__ != '__main__':
+    # Children only aka workers
+    create_engine()
+    create_cache_engine(CACHE_COLLECTIONS)
 
 
 def import_callback(app_: FastAPI, endpoint: t.Union[router.Endpoint, router.Websocket]):
