@@ -44,8 +44,8 @@ class UserAPI(router.Blueprint):
         if room_session is None:
             return UserInfoResponse(exists=False)
 
-        room_session = room_session.decode()
-        return UserInfoResponse(exists=True, session_id=room_session)
+        room_session = orjson.loads(room_session.decode())
+        return UserInfoResponse(exists=True, **room_session)
 
 
 def setup(app):

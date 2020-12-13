@@ -6,4 +6,4 @@ class UserInfoResponse(BaseModel):
     status: int = 200
     exists: bool
     session_id: t.Optional[str] = None
-
+    room_id: t.Optional[str] = None

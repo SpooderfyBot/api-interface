@@ -358,7 +358,8 @@ class GateKeeping(BaseGatewayEnabled, router.Blueprint):
         # alter endpoint.
         for user_id in user_ids:
             session_id = create_session_id()
-            await redis['room_sessions'].set(user_id, session_id)
+            data = orjson.dumps({'room_id': room_id, "session_id": session_id})
+            await redis['room_sessions'].set(user_id, data)
 
             response_ids[user_id] = session_id
 
@@ -398,11 +399,11 @@ class GateKeeping(BaseGatewayEnabled, router.Blueprint):
         # on the gateway just for adding sessions instead of the existing
         # alter endpoint.
         for user_id in user_ids:
-            session_id = await redis['room_sessions'].get(user_id)
-            if session_id is None:
+            session = await redis['room_sessions'].get(user_id)
+            if session is None:
                 continue
 
-            session_id = session_id.decode()
+            session_id = orjson.loads(session.decode())['session_id']
 
             try:
                 await self.alter_session(room_id, session_id, REMOVE_SESSION)
