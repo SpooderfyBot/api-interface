@@ -350,14 +350,18 @@
 </div>
 </body>
 <script>
-    const REPLACE_URL = "https://" + document.location.host;
+    const REPLACE_URL = "https://" + document.location.host + "/room";
     const WS_URL = "wss://" + document.location.host + "/gateway";
     const API_URL = "https://" + document.location.host +"/api";
     const ROOM_ID = document.location.href.replace(REPLACE_URL, "");
 
-    const WS = new WebSocket(`${WS_URL}?id=${ROOM_ID}`);
+    let gateway = new WebSocket(`${WS_URL}?id=${ROOM_ID}`);
 
-    WS.onmessage = function (event) {
+    gateway.onopen = function () {
+        console.log("ready");
+    }
+
+    gateway.onmessage = function (event) {
         let data = JSON.parse(event.data);
         console.log(data)
     }
