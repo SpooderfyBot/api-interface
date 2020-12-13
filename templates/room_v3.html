@@ -309,12 +309,11 @@
                     <div v-for="message in messages" class="px-4 pt-2">
                             <div class="relative py-2">
                                 <img class="inline-block absolute rounded-full object-contain w-12 h-12 mt-1"
-                                     v-bind:src="message.avatar" alt="Skull">
+                                     v-bind:src="message.avatar" alt="">
                                 <div class="inline-block relative ml-16 mt-1">
                                     <div class="top-0 left-0">
                                         <div>
-                                            <h3 class="inline-block font-semibold text-lg text-blue-400">{{ message.user }}</h3>
-                                            <p class="inline-block font-sm text-sm text-gray-600 pl-2">{{ message.timestamp }}</p>
+                                            <h3 class="inline-block font-semibold text-lg text-blue-400">{{ message.username }}</h3>
                                         </div>
                                         <div>
                                             <p class="text-white text-md">
@@ -351,6 +350,18 @@
 </div>
 </body>
 <script>
+    const REPLACE_URL = "https://" + document.location.host;
+    const WS_URL = "wss://" + document.location.host + "/gateway";
+    const API_URL = "https://" + document.location.host +"/api";
+    const ROOM_ID = document.location.href.replace(REPLACE_URL, "");
+
+    const WS = new WebSocket(`${WS_URL}?id=${ROOM_ID}`);
+
+    WS.onmessage = function (event) {
+        let data = JSON.parse(event.data);
+        console.log(data)
+    }
+
     const navControl = new Vue({
         el: "#nav",
         data: {
@@ -370,149 +381,20 @@
         created: function() { },
     })
 
-    const API_URL = "https://" + document.location.host +"/api";
-
-    const videoInfo = new Vue({
-        el: "#video-system",
-        data: {
-            admin: true,
-            allowMembers: false,  // only valid if admin=true
-            isPlaylist: false,
-            isFavourite: false,
-            isSaved: false,
-            isLiked: false,
-            isDisliked: false,
-            videoId: '9124121234521',
-            playlistName: "ChillFish8's Playlist",
-            playlistUrl: "#",   // todo add this
-            videoName: "Greek Fire - A Real Life",
-            currentVideoUrl: "",
-            playlistVideos: [],
-        },
-        methods: {
-            toggleAllowMembers: function (event) {
-                alert("hello world!!")
-            },
-            onFavourite: function (event) {  // todo post request
-                const requestOptions = {
-                    method: "POST",
-                    headers: { "Content-Type": "application/json" },
-                };
-                if (this.isFavourite) {
-                    fetch(API_URL+"/packs/"+this.videoId+"/favourite/remove", requestOptions)
-                } else {
-                    fetch(API_URL+"/packs/"+this.videoId+"/favourite/add", requestOptions)
-                }
-
-            },
-            onLike: function (event) {  // todo post request
-                let requestOptions;
-                if (this.isLiked) {
-                    requestOptions = {
-                        method: "DELETE",
-                        headers: { "Content-Type": "application/json" },
-                    };
-                } else {
-                    requestOptions = {
-                        method: "POST",
-                        headers: { "Content-Type": "application/json" },
-                    };
-                }
-
-                fetch(API_URL+"/packs/"+this.videoId+"/like", requestOptions)
-            },
-            onDislike: function (event) {   // todo post request
-                let requestOptions;
-                if (this.isDisliked) {
-                    requestOptions = {
-                        method: "DELETE",
-                        headers: { "Content-Type": "application/json" },
-                    };
-                } else {
-                    requestOptions = {
-                        method: "POST",
-                        headers: { "Content-Type": "application/json" },
-                    };
-                }
-
-                fetch(API_URL+"/packs/"+this.videoId+"/dislike", requestOptions)
-            },
-            onMovePrevious: function (event) {  // todo WS
-                if (!this.isPlaylist) { return; }
-
-
-            },
-            onMoveNext: function (event) {  // todo WS
-                if (!this.isPlaylist) { return; }
-
-
-            }
-        },
-        created: function() { },
-    })
-
-
     const roomChat = new Vue({
         el: "#room-chat",
         data: {
-            admin: true,
-            messages: [
-                {
-                    user: "SkullBite",
-                    avatar: "https://cdn.discordapp.com/avatars/158750488563679232/f6ab6a01d9dff765a0603ba891396c5f.webp?size=128",
-                    timestamp: "Today at 10:09 PM",
-                    content: "Lets go!"
-                },
-                {
-                    user: "ChillFish8",
-                    avatar: "https://cdn.discordapp.com/avatars/290923752475066368/4921a5665c5320be55559d1a026fca68.webp?size=128",
-                    timestamp: "Today at 10:10 PM",
-                    content: "Hello from Discord! 👋 Did you know anything sent here goes straight to the room?"
-                },
-                {
-                    user: "SkullBite",
-                    avatar: "https://cdn.discordapp.com/avatars/158750488563679232/f6ab6a01d9dff765a0603ba891396c5f.webp?size=128",
-                    timestamp: "Today at 10:10 PM",
-                    content: "Did you know you can give members control of seeking to parts of the video as well as just yourself?"
-                },
-                {
-                    user: "ChillFish8",
-                    avatar: "https://cdn.discordapp.com/avatars/290923752475066368/4921a5665c5320be55559d1a026fca68.webp?size=128",
-                    timestamp: "Today at 10:11 PM",
-                    content: "Did you say these players are in sync!?"
-                },
-                {
-                    user: "SkullBite",
-                    avatar: "https://cdn.discordapp.com/avatars/158750488563679232/f6ab6a01d9dff765a0603ba891396c5f.webp?size=128",
-                    timestamp: "Today at 10:12 PM",
-                    content: "Hell yeah! All users in complete sync, no more dealing with Discord's laggy streams!"
-                },
-            ]
+            messages: []
         },
-        methods:
-            {
-                onTyping: function (event) {
-                    if(event.keyCode === 13){
-                        this.onTypingSubmit()
-                        event.preventDefault();
-                    }
-                },
-                onTypingSubmit: function (event) {
-                    let elm = document.getElementById("text-box");
-                    if (elm.value !== "") {
-
-                    }
-                    elm.value = ""
-                },
-                addMessage: function (msg) {
-                    this.messages.push(msg);
-                },
+        methods: {
+            addMessage: function (msg) {
+                this.data.push(msg);
             },
+        },
         created: function() {
-            this.playlistName = "bob";
+
         },
     })
-
 
 </script>
 </html>

@@ -120,8 +120,6 @@ class PlayerEndpoints(BaseGatewayEnabled, router.Blueprint):
                 "message": "Unauthorized"
             }, status_code=401)
 
-
-
         await self.ws.send({
             "room_id": room_id,
             "message": {
