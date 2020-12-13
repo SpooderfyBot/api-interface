@@ -259,7 +259,7 @@ class MessageChat(BaseGatewayEnabled, router.Blueprint):
                 "content": msg.content,
                 "user_id": user.id,
                 "username": user.username,
-                "avatar": DISCORD_AVATAR.format(user.id, user.avatar),
+                "avatar": DISCORD_AVATAR.format(user_id=user.id, avatar=user.avatar),
             }
         })
 
