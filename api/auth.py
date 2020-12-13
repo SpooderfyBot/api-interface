@@ -79,7 +79,9 @@ class Authorization(router.Blueprint):
         if code is None:
             existing = request.cookies.get("session")
             if existing is not None:
-                return responses.RedirectResponse(redirect_to)
+                valid = await redis['sessions'].get(existing)
+                if valid is not None:
+                    return responses.RedirectResponse(redirect_to)
 
             url = make_redirect_url()
             resp = responses.RedirectResponse(url)
