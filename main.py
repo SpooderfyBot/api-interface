@@ -20,9 +20,8 @@ CACHE_COLLECTIONS = [
     "room_sessions"
 ]
 
-if __name__ == '__main__':
-    create_engine()
-    create_cache_engine(CACHE_COLLECTIONS)
+create_engine()
+create_cache_engine(CACHE_COLLECTIONS)
 
 
 def import_callback(app_: FastAPI, endpoint: t.Union[router.Endpoint, router.Websocket]):
