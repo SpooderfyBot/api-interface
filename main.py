@@ -19,7 +19,6 @@ APP_FILES = [
 CACHE_COLLECTIONS = [
     "rooms",
     "sessions",
-    "room_sessions"
 ]
 
 if __name__ != '__main__':
