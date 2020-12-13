@@ -1,5 +1,7 @@
 import typing as t
 import aiohttp
+import orjson
+
 import router
 import logging
 
@@ -113,6 +115,8 @@ class PlayerEndpoints(BaseGatewayEnabled, router.Blueprint):
                 "status": 401,
                 "message": "Unauthorized"
             }, status_code=401)
+
+
 
         await self.ws.send({
             "room_id": room_id,
@@ -245,6 +249,7 @@ class MessageChat(BaseGatewayEnabled, router.Blueprint):
                 "message": "Unauthorized"
             }, status_code=401)
 
+        session = orjson.loads(session.decode())
         user = User(**session)
 
         await self.ws.send({
