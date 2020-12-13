@@ -361,6 +361,10 @@
         console.log("ready");
     }
 
+    gateway.onclose = function () {
+        console.log("closing");
+    }
+
     gateway.onmessage = function (event) {
         let data = JSON.parse(event.data);
         console.log(data)
