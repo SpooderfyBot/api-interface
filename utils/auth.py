@@ -23,6 +23,8 @@ def login_required(func):
 
     @wraps(func)
     async def wrapper(request: Request, *args, **kwargs):
+        kwargs.pop("request", None)
+
         session_id = request.cookies.get("session")
         if session_id is None:
             url = request.url
