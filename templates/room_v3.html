@@ -355,6 +355,13 @@
     const API_URL = "https://" + document.location.host +"/api";
     const ROOM_ID = document.location.href.replace(REPLACE_URL, "");
 
+    const OP_PLAY = 0
+    const OP_PAUSE = 1
+    const OP_SEEK = 2
+    const OP_NEXT = 3
+    const OP_PREV = 4
+    const OP_MESSAGE = 5
+
     let gateway = new WebSocket(`${WS_URL}?id=${ROOM_ID}`);
 
     gateway.onopen = function () {
@@ -367,7 +374,16 @@
 
     gateway.onmessage = function (event) {
         let data = JSON.parse(event.data);
-        console.log(data)
+
+        switch (data.op) {
+            case OP_PLAY:
+                break;
+            case OP_PAUSE:
+                break;
+            case OP_MESSAGE:
+                roomChat.addMessage(data)
+                break;
+        }
     }
 
     const navControl = new Vue({
