@@ -18,9 +18,10 @@ async def main():
 
     session = aiohttp.ClientSession()
     ws: aiohttp.ClientWebSocketResponse = await session.ws_connect(
-        "ws://spooderfy.com/gateway"
-        "?id=QISRN"
-        "&session=fd71c40de49548b4aab0f7f06d924e93"
+        "ws://127.0.0.1:5051/ws"
+        "?id=nvs34"
+        "&session=1234",
+        heartbeat=5
     )
     print("connected")
 
@@ -31,7 +32,8 @@ async def main():
 
     await fut
 
-
+    await ws.close()
+    await session.close()
 
 
 asyncio.run(main())
