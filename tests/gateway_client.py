@@ -19,8 +19,8 @@ async def main():
     session = aiohttp.ClientSession()
     ws: aiohttp.ClientWebSocketResponse = await session.ws_connect(
         "ws://spooderfy.com/gateway"
-        "?id=PFFFU"
-        "&session=c6c98bf6059f4037bc6de34eef87103b"
+        "?id=QISRN"
+        "&session=fd71c40de49548b4aab0f7f06d924e93"
     )
     print("connected")
 
