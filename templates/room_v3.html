@@ -18,7 +18,6 @@
     <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
     <script defer
             src="https://cdn.jsdelivr.net/gh/alpinejs/alpine@v2.x.x/dist/alpine.min.js"></script>
-    <script src="https://spooderfy.com/static/js/player.js"></script>
 </head>
 <style>
 
@@ -96,7 +95,7 @@
                     <div class="w-full flex justify-center items-center">
                         <div class="w-1/6 px-4" v-if="admin">
                             <svg class="float-left w-10 h-10 text-white hover:text-red-500 transition duration-200 cursor-pointer" fill="none"
-                                 onclick="videoInfo.onMovePrevious()"
+                                 onclick="VIDEO_INFO.onMovePrevious()"
                                  stroke="currentColor" v-if="isPlaylist" viewBox="0 0 24 24"
                                  xmlns="http://www.w3.org/2000/svg">
                                 <path d="M12.066 11.2a1 1 0 000 1.6l5.334 4A1 1 0 0019 16V8a1 1 0 00-1.6-.8l-5.333 4zM4.066 11.2a1 1 0 000 1.6l5.334 4A1 1 0 0011 16V8a1 1 0 00-1.6-.8l-5.334 4z" stroke-linecap="round"
@@ -118,7 +117,7 @@
 
                         <div class="w-1/6 px-4" v-if="admin">
                             <svg class="float-right w-10 h-10 text-white hover:text-red-500 transition duration-200 cursor-pointer" fill="none"
-                                 onclick="videoInfo.onMoveNext()"
+                                 onclick="VIDEO_INFO.onMoveNext()"
                                  stroke="currentColor" v-if="isPlaylist" viewBox="0 0 24 24"
                                  xmlns="http://www.w3.org/2000/svg">
                                 <path d="M11.933 12.8a1 1 0 000-1.6L6.6 7.2A1 1 0 005 8v8a1 1 0 001.6.8l5.333-4zM19.933 12.8a1 1 0 000-1.6l-5.333-4A1 1 0 0013 8v8a1 1 0 001.6.8l5.333-4z" stroke-linecap="round"
@@ -252,7 +251,7 @@
             <div class="h-12" id="panel">
                 <div class="float-right w-auto mx-4 my-2 flex" v-if="admin">
                     <div class="relative inline-block w-10 mr-2 align-middle select-none transition duration-200 ease-in-out"
-                         onclick="videoInfo.toggleAllowMembers()">
+                         onclick="VIDEO_INFO.toggleAllowMembers()">
                         <input class="toggle-checkbox absolute block w-6 h-6 rounded-full bg-white border-4 border-red-500 appearance-none cursor-pointer" id="member-control" name="toggle"
                                type="checkbox"/>
                         <label class="toggle-label block overflow-hidden h-6 rounded-full bg-red-500 cursor-pointer"
@@ -264,7 +263,7 @@
                 </div>
 
                 <div class="float-left w-auto mx-6 my-2 flex items-center">
-                    <div class="flex items-center px-1" onclick="videoInfo.onLike()" v-if="isSaved">
+                    <div class="flex items-center px-1" onclick="VIDEO_INFO.onLike()" v-if="isSaved">
                         <div class="w-6 h-6 text-green-400 cursor-pointer">
                             <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"
                                  xmlns="http://www.w3.org/2000/svg">
@@ -275,7 +274,7 @@
                         </div>
                     </div>
                     <div class="flex items-center px-2">
-                        <div class="w-6 h-6 text-red-700 cursor-pointer" onclick="videoInfo.onDislike()"
+                        <div class="w-6 h-6 text-red-700 cursor-pointer" onclick="VIDEO_INFO.onDislike()"
                              v-if="isSaved">
                             <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"
                                  xmlns="http://www.w3.org/2000/svg">
@@ -287,7 +286,7 @@
                     </div>
 
                     <div class="px-4">
-                        <div class="flex items-center cursor-pointer" onclick="videoInfo.onFavourite()"
+                        <div class="flex items-center cursor-pointer" onclick="VIDEO_INFO.onFavourite()"
                              v-if="isSaved">
                             <div class="w-6 h-6 text-red-500">
                                 <svg fill="none" stroke="currentColor"
@@ -361,7 +360,7 @@
     </div>
 </div>
 </body>
-<script>
+<script src="https://spooderfy.com/static/js/player.js">
     const REPLACE_URL = "https://" + document.location.host + "/room/";
     const WS_URL = "wss://" + document.location.host + "/gateway";
     const API_URL = "https://" + document.location.host + "/api";
@@ -398,7 +397,38 @@
         }
     }
 
-    const navControl = new Vue({
+    const VIDEO_INFO = new Vue({
+        el: "#vid-container",
+        data: {
+
+        },
+        methods:
+            {
+                onMovePrevious: function () {
+
+                },
+                onMoveNext: function () {
+
+                },
+                toggleAllowMembers: function () {
+
+                },
+                onLike: function () {
+
+                },
+                onDislike: function () {
+
+                },
+                onFavourite: function () {
+
+                },
+            },
+        created: function () {
+            loadVideo();
+        },
+    })
+
+    const NAV_CONTROL = new Vue({
         el: "#nav",
         data: {
             home: "https://" + document.location.host + "/home",
