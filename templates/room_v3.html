@@ -117,7 +117,7 @@
                             </div>
 
                             <div v-if="videoSrcUrl == ''" class="min-w-full min-h-full w-full h-full">
-                                <div class="flex justify-center items-center" style="height: 500px">
+                                <div class="flex justify-center items-center" style="height: 34vw">
                                     <div class="h-64 w-64 rounded-full px-8 flex items-center">
                                         <img src="../static/images/spooderfy_white_fill.png" alt="">
                                     </div>
@@ -321,16 +321,25 @@
 
         switch (data.op) {
             case OP_PLAY:
+                if (VideoControls.videoSrcUrl === '') {
+                    return
+                }
                 VideoControls.video.play();
                 break;
             case OP_PAUSE:
+                if (VideoControls.videoSrcUrl === '') {
+                    return
+                }
                 VideoControls.video.pause();
                 break;
             case OP_SEEK:
+                if (VideoControls.videoSrcUrl === '') {
+                    return
+                }
                 VideoControls.video.currentTime = data.position;
                 break;
             case OP_NEXT:
-                VideoControls.nextVideo(data);
+                VideoControls.setVideo(data);
                 break;
             case OP_MESSAGE:
                 roomChat.addMessage(data)
@@ -370,6 +379,7 @@
             onTypingSubmit: function () {
                 let elm = document.getElementById("text-box");
                 let msg = elm.value;
+                elm.value = "";
                 let xhttp = new XMLHttpRequest();
                 let payload = JSON.stringify({
                     content: msg,

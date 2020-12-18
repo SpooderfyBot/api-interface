@@ -211,7 +211,7 @@ class PlayerEndpoints(BaseGatewayEnabled, router.Blueprint):
         await self.ws.send({
             "room_id": room_id,
             "message": {
-                "op": OP_PREV,
+                "op": OP_NEXT,
                 "track": {  # todo add track fetching
                     "title": "xyz",
                     "reference_url": "xyz.com",
