@@ -374,7 +374,7 @@
                 let payload = JSON.stringify({
                     content: msg,
                 })
-                xhttp.open("POST", `${API_ROOM_URL}/message`, true);
+                xhttp.open("PUT", `${API_ROOM_URL}/message`, true);
                 xhttp.send(payload);
             },
             onTyping: function (event) {
