@@ -9,57 +9,60 @@
     <meta content="Create movie nights like never before with Spooderfy."
           name="description">
 
-    <link href="https://unpkg.com/tailwindcss@^1.0/dist/tailwind.min.css" type="text/css"
-          rel="stylesheet"/>
-    <link href="https://spooderfy.com/static/css/room.css" type="text/css"
-          rel="stylesheet"/>
+    <link href="https://unpkg.com/tailwindcss@^1.0/dist/tailwind.min.css" rel="stylesheet"
+          type="text/css"/>
+    <link href="https://spooderfy.com/static/css/room.css" rel="stylesheet"
+          type="text/css"/>
+    <link href="https://spooderfy.com/static/css/player_style.css" rel="stylesheet"
+          type="text/css"/>
     <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
-    <script src="https://cdn.jsdelivr.net/gh/alpinejs/alpine@v2.x.x/dist/alpine.min.js"
-            defer></script>
+    <script defer
+            src="https://cdn.jsdelivr.net/gh/alpinejs/alpine@v2.x.x/dist/alpine.min.js"></script>
+    <script src="https://spooderfy.com/static/js/player.js"></script>
 </head>
 <style>
 
 </style>
 <body class="bg-gradient min-h-screen overflow-x-hidden">
-<div id="nav" class="w-full">
+<div class="w-full" id="nav">
     <div class="w-full text-gray-700 bg-discord-dark">
-        <div x-data="{ open: false }"
-             class="flex flex-col w-5/6 px-4 mx-auto md:items-center md:justify-between md:flex-row md:px-6 lg:px-8">
+        <div class="flex flex-col w-5/6 px-4 mx-auto md:items-center md:justify-between md:flex-row md:px-6 lg:px-8"
+             x-data="{ open: false }">
             <div class="p-4 flex flex-row items-center justify-between">
                 <div class="slide-nav-3 cursor-default">
-                    <img class="inline-block h-10 w-10 rounded-full bg-gradient p-1"
-                         src="../static/images/spooderfy_white_fill.png" alt="">
+                    <img alt=""
+                         class="inline-block h-10 w-10 rounded-full bg-gradient p-1" src="../static/images/spooderfy_white_fill.png">
                     <h1 class="px-1 inline-block text-white text-xl font-bold">Spooderfy</h1>
                 </div>
-                <button class="md:hidden rounded-lg focus:outline-none focus:shadow-outline"
-                        @click="open = !open">
-                    <svg fill="currentColor" viewBox="0 0 20 20" class="w-6 h-6">
-                        <path x-show="!open" fill-rule="evenodd"
-                              d="M3 5a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zM3 10a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zM9 15a1 1 0 011-1h6a1 1 0 110 2h-6a1 1 0 01-1-1z"
-                              clip-rule="evenodd"></path>
-                        <path x-show="open" fill-rule="evenodd"
-                              d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
-                              clip-rule="evenodd"></path>
+                <button @click="open = !open"
+                        class="md:hidden rounded-lg focus:outline-none focus:shadow-outline">
+                    <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 20 20">
+                        <path clip-rule="evenodd" d="M3 5a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zM3 10a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zM9 15a1 1 0 011-1h6a1 1 0 110 2h-6a1 1 0 01-1-1z"
+                              fill-rule="evenodd"
+                              x-show="!open"></path>
+                        <path clip-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
+                              fill-rule="evenodd"
+                              x-show="open"></path>
                     </svg>
                 </button>
             </div>
             <div class="slide-nav-5 flex justify-center hidden lg:block w-full lg:w-1/2 pb-2 lg:pt-2">
                 <div class="p-2 relative mx-auto w-full lg:w-2/3">
                     <label>
-                        <input id="search-content"
-                               class="border-2 border-gray-300 bg-white w-full h-10 px-5 pr-16 rounded-lg text-sm focus:outline-none placeholder-gray-600 text-discord-dark font-medium"
-                               type="search" name="search"
-                               placeholder="Search for movie packs and communities...">
+                        <input class="border-2 border-gray-300 bg-white w-full h-10 px-5 pr-16 rounded-lg text-sm focus:outline-none placeholder-gray-600 text-discord-dark font-medium"
+                               id="search-content"
+                               name="search" placeholder="Search for movie packs and communities..."
+                               type="search">
                     </label>
-                    <button v-on:click="search" type="submit"
-                            class="absolute right-0 top-0 mt-5 mr-4 focus:outline-none">
+                    <button class="absolute right-0 top-0 mt-5 mr-4 focus:outline-none" type="submit"
+                            v-on:click="search">
                         <svg class="text-gray-600 h-4 w-4 fill-current"
-                             xmlns="http://www.w3.org/2000/svg"
-                             version="1.1" id="Capa_1" x="0px" y="0px"
-                             viewBox="0 0 56.966 56.966"
-                             style="enable-background:new 0 0 56.966 56.966;"
+                             height="512px"
+                             id="Capa_1" style="enable-background:new 0 0 56.966 56.966;" version="1.1" viewBox="0 0 56.966 56.966"
+                             width="512px"
+                             x="0px"
                              xml:space="preserve"
-                             width="512px" height="512px">
+                             xmlns="http://www.w3.org/2000/svg" y="0px">
                         <path
                                 d="M55.146,51.887L41.588,37.786c3.486-4.144,5.396-9.358,5.396-14.786c0-12.682-10.318-23-23-23s-23,10.318-23,23  s10.318,23,23,23c4.761,0,9.298-1.436,13.177-4.162l13.661,14.208c0.571,0.593,1.339,0.92,2.162,0.92  c0.779,0,1.518-0.297,2.079-0.837C56.255,54.982,56.293,53.08,55.146,51.887z M23.984,6c9.374,0,17,7.626,17,17s-7.626,17-17,17  s-17-7.626-17-17S14.61,6,23.984,6z"></path>
                       </svg>
@@ -80,9 +83,9 @@
         </div>
     </div>
 </div>
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 100 1440 80">
-    <path fill="#23272A" fill-opacity="1"
-          d="M0,160L60,149.3C120,139,240,117,360,128C480,139,600,181,720,181.3C840,181,960,139,1080,122.7C1200,107,1320,117,1380,122.7L1440,128L1440,0L1380,0C1320,0,1200,0,1080,0C960,0,840,0,720,0C600,0,480,0,360,0C240,0,120,0,60,0L0,0Z"></path>
+<svg viewBox="0 100 1440 80" xmlns="http://www.w3.org/2000/svg">
+    <path d="M0,160L60,149.3C120,139,240,117,360,128C480,139,600,181,720,181.3C840,181,960,139,1080,122.7C1200,107,1320,117,1380,122.7L1440,128L1440,0L1380,0C1320,0,1200,0,1080,0C960,0,840,0,720,0C600,0,480,0,360,0C240,0,120,0,60,0L0,0Z" fill="#23272A"
+          fill-opacity="1"></path>
 </svg>
 
 <div class="w-full flex justify-around">
@@ -91,21 +94,21 @@
             <div id="video-system">
                 <div class="py-2 px-4">
                     <div class="w-full flex justify-center items-center">
-                        <div v-if="admin" class="w-1/6 px-4">
-                            <svg v-if="isPlaylist" onclick="videoInfo.onMovePrevious()"
-                                 class="float-left w-10 h-10 text-white hover:text-red-500 transition duration-200 cursor-pointer"
-                                 xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
-                                 stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round"
-                                      stroke-width="2"
-                                      d="M12.066 11.2a1 1 0 000 1.6l5.334 4A1 1 0 0019 16V8a1 1 0 00-1.6-.8l-5.333 4zM4.066 11.2a1 1 0 000 1.6l5.334 4A1 1 0 0011 16V8a1 1 0 00-1.6-.8l-5.334 4z"/>
+                        <div class="w-1/6 px-4" v-if="admin">
+                            <svg class="float-left w-10 h-10 text-white hover:text-red-500 transition duration-200 cursor-pointer" fill="none"
+                                 onclick="videoInfo.onMovePrevious()"
+                                 stroke="currentColor" v-if="isPlaylist" viewBox="0 0 24 24"
+                                 xmlns="http://www.w3.org/2000/svg">
+                                <path d="M12.066 11.2a1 1 0 000 1.6l5.334 4A1 1 0 0019 16V8a1 1 0 00-1.6-.8l-5.333 4zM4.066 11.2a1 1 0 000 1.6l5.334 4A1 1 0 0011 16V8a1 1 0 00-1.6-.8l-5.334 4z" stroke-linecap="round"
+                                      stroke-linejoin="round"
+                                      stroke-width="2"/>
                             </svg>
                         </div>
 
                         <div class="w-2/3 flex justify-center pb-3">
                             <div class="">
                                 <a class="text-center inline-block text-xl font-bold cursor-pointer border-b-2 border-transparent transition duration-200 ml-6 pt-4 text-spoods-purple border-transparent border-spoods-purple-hover"
-                                   v-text="playlistName" v-bind:href="playlistUrl"></a>
+                                   v-bind:href="playlistUrl" v-text="playlistName"></a>
                                 <h1 class="text-center inline-block text-xl font-bold text-white px-1">
                                     |</h1>
                                 <h1 class="text-center inline-block text-xl font-bold text-white"
@@ -113,14 +116,14 @@
                             </div>
                         </div>
 
-                        <div v-if="admin" class="w-1/6 px-4">
-                            <svg v-if="isPlaylist" onclick="videoInfo.onMoveNext()"
-                                 class="float-right w-10 h-10 text-white hover:text-red-500 transition duration-200 cursor-pointer"
-                                 xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
-                                 stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round"
-                                      stroke-width="2"
-                                      d="M11.933 12.8a1 1 0 000-1.6L6.6 7.2A1 1 0 005 8v8a1 1 0 001.6.8l5.333-4zM19.933 12.8a1 1 0 000-1.6l-5.333-4A1 1 0 0013 8v8a1 1 0 001.6.8l5.333-4z"/>
+                        <div class="w-1/6 px-4" v-if="admin">
+                            <svg class="float-right w-10 h-10 text-white hover:text-red-500 transition duration-200 cursor-pointer" fill="none"
+                                 onclick="videoInfo.onMoveNext()"
+                                 stroke="currentColor" v-if="isPlaylist" viewBox="0 0 24 24"
+                                 xmlns="http://www.w3.org/2000/svg">
+                                <path d="M11.933 12.8a1 1 0 000-1.6L6.6 7.2A1 1 0 005 8v8a1 1 0 001.6.8l5.333-4zM19.933 12.8a1 1 0 000-1.6l-5.333-4A1 1 0 0013 8v8a1 1 0 001.6.8l5.333-4z" stroke-linecap="round"
+                                      stroke-linejoin="round"
+                                      stroke-width="2"/>
                             </svg>
                         </div>
                     </div>
@@ -129,115 +132,233 @@
                     </div>
                 </div>
 
-                <div id="vid-container"
-                     class="video-container self-center w-full px-4 flex justify-center">
-                </div>
-        </div>
+                <div class="video-container self-center w-full px-4 flex justify-center"
+                     id="vid-container">
+                    <div class="vid-container w-1/2">
+                        <div class="video-container relative" id="video-container">
+                            <div class="playback-animation" id="playback-animation">
+                                <svg class="vid-svg playback-icons">
+                                    <use class="hidden" href="#play-icon"></use>
+                                    <use href="#pause"></use>
+                                </svg>
+                            </div>
 
-        <div id="panel" class="h-12">
-            <div v-if="admin" class="float-right w-auto mx-4 my-2 flex">
-                <div onclick="videoInfo.toggleAllowMembers()"
-                     class="relative inline-block w-10 mr-2 align-middle select-none transition duration-200 ease-in-out">
-                    <input type="checkbox" name="toggle" id="member-control"
-                           class="toggle-checkbox absolute block w-6 h-6 rounded-full bg-white border-4 border-red-500 appearance-none cursor-pointer"/>
-                    <label for="member-control"
-                           class="toggle-label block overflow-hidden h-6 rounded-full bg-red-500 cursor-pointer"></label>
+                            <video class="video" controls id="video" preload="metadata">
+                                <source src="https://spooderfy.com/static/videos/video.mp4" type="video/mp4">
+                            </video>
+
+                            <div class="video-controls hidden" id="video-controls">
+                                <div class="video-progress">
+                                    <progress id="progress-bar" min="0" value="0"></progress>
+                                    <input class="vid-input seek" id="seek" max="100" min="0"
+                                           step="1" type="range" value="0">
+                                    <div class="seek-tooltip" id="seek-tooltip">00:00</div>
+                                </div>
+
+                                <div class="bottom-controls">
+                                    <div class="left-controls">
+                                        <button class="vid-button outline-none focus:outline-none"
+                                                data-title="Play (k)"
+                                                id="play">
+                                            <svg class="vid-svg playback-icons">
+                                                <use href="#play-icon"></use>
+                                                <use class="hidden" href="#pause"></use>
+                                            </svg>
+                                        </button>
+
+                                        <div class="volume-controls">
+                                            <button class="vid-button volume-button outline-none focus:outline-none"
+                                                    data-title="Mute (m)"
+                                                    id="volume-button">
+                                                <svg class="vid-svg">
+                                                    <use class="hidden" href="#volume-mute"></use>
+                                                    <use class="hidden" href="#volume-low"></use>
+                                                    <use href="#volume-high"></use>
+                                                </svg>
+                                            </button>
+
+                                            <input class="vid-input volume" data-mute="0.5" id="volume"
+                                                   max="1" min="0" step="0.01" type="range"
+                                                   value="1">
+                                        </div>
+
+                                        <div class="time">
+                                            <time id="time-elapsed">00:00</time>
+                                            <span> / </span>
+                                            <time id="duration">00:00</time>
+                                        </div>
+                                    </div>
+
+                                    <div class="right-controls">
+                                        <button class="vid-button pip-button outline-none focus:outline-none"
+                                                data-title="PIP (p)"
+                                                id="pip-button">
+                                            <svg class="vid-svg">
+                                                <use href="#pip"></use>
+                                            </svg>
+                                        </button>
+                                        <button class="vid-button fullscreen-button outline-none focus:outline-none"
+                                                data-title="Full screen (f)"
+                                                id="fullscreen-button">
+                                            <svg class="vid-svg">
+                                                <use href="#fullscreen"></use>
+                                                <use class="hidden" href="#fullscreen-exit"></use>
+                                            </svg>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <svg class="vid-svg" style="display: none">
+                        <defs>
+                            <symbol id="pause" viewBox="0 0 24 24">
+                                <path d="M14.016 5.016h3.984v13.969h-3.984v-13.969zM6 18.984v-13.969h3.984v13.969h-3.984z"></path>
+                            </symbol>
+
+                            <symbol id="play-icon" viewBox="0 0 24 24">
+                                <path d="M8.016 5.016l10.969 6.984-10.969 6.984v-13.969z"></path>
+                            </symbol>
+
+                            <symbol id="volume-high" viewBox="0 0 24 24">
+                                <path d="M14.016 3.234q3.047 0.656 5.016 3.117t1.969 5.648-1.969 5.648-5.016 3.117v-2.063q2.203-0.656 3.586-2.484t1.383-4.219-1.383-4.219-3.586-2.484v-2.063zM16.5 12q0 2.813-2.484 4.031v-8.063q1.031 0.516 1.758 1.688t0.727 2.344zM3 9h3.984l5.016-5.016v16.031l-5.016-5.016h-3.984v-6z"></path>
+                            </symbol>
+
+                            <symbol id="volume-low" viewBox="0 0 24 24">
+                                <path d="M5.016 9h3.984l5.016-5.016v16.031l-5.016-5.016h-3.984v-6zM18.516 12q0 2.766-2.531 4.031v-8.063q1.031 0.516 1.781 1.711t0.75 2.32z"></path>
+                            </symbol>
+
+                            <symbol id="volume-mute" viewBox="0 0 24 24">
+                                <path d="M12 3.984v4.219l-2.109-2.109zM4.266 3l16.734 16.734-1.266 1.266-2.063-2.063q-1.547 1.313-3.656 1.828v-2.063q1.172-0.328 2.25-1.172l-4.266-4.266v6.75l-5.016-5.016h-3.984v-6h4.734l-4.734-4.734zM18.984 12q0-2.391-1.383-4.219t-3.586-2.484v-2.063q3.047 0.656 5.016 3.117t1.969 5.648q0 2.203-1.031 4.172l-1.5-1.547q0.516-1.266 0.516-2.625zM16.5 12q0 0.422-0.047 0.609l-2.438-2.438v-2.203q1.031 0.516 1.758 1.688t0.727 2.344z"></path>
+                            </symbol>
+
+                            <symbol id="fullscreen" viewBox="0 0 24 24">
+                                <path d="M14.016 5.016h4.969v4.969h-1.969v-3h-3v-1.969zM17.016 17.016v-3h1.969v4.969h-4.969v-1.969h3zM5.016 9.984v-4.969h4.969v1.969h-3v3h-1.969zM6.984 14.016v3h3v1.969h-4.969v-4.969h1.969z"></path>
+                            </symbol>
+
+                            <symbol id="fullscreen-exit" viewBox="0 0 24 24">
+                                <path d="M15.984 8.016h3v1.969h-4.969v-4.969h1.969v3zM14.016 18.984v-4.969h4.969v1.969h-3v3h-1.969zM8.016 8.016v-3h1.969v4.969h-4.969v-1.969h3zM5.016 15.984v-1.969h4.969v4.969h-1.969v-3h-3z"></path>
+                            </symbol>
+
+                            <symbol id="pip" viewBox="0 0 24 24">
+                                <path d="M21 19.031v-14.063h-18v14.063h18zM23.016 18.984q0 0.797-0.609 1.406t-1.406 0.609h-18q-0.797 0-1.406-0.609t-0.609-1.406v-14.016q0-0.797 0.609-1.383t1.406-0.586h18q0.797 0 1.406 0.586t0.609 1.383v14.016zM18.984 11.016v6h-7.969v-6h7.969z"></path>
+                            </symbol>
+                        </defs>
+                    </svg>
                 </div>
-                <label for="member-control" class="text-lg text-white font-semibold">Give Members
-                    Control</label>
             </div>
 
-            <div class="float-left w-auto mx-6 my-2 flex items-center">
-                <div v-if="isSaved" onclick="videoInfo.onLike()" class="flex items-center px-1">
-                    <div class="w-6 h-6 text-green-400 cursor-pointer">
-                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
-                             stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                  d="M14 10h4.764a2 2 0 011.789 2.894l-3.5 7A2 2 0 0115.263 21h-4.017c-.163 0-.326-.02-.485-.06L7 20m7-10V5a2 2 0 00-2-2h-.095c-.5 0-.905.405-.905.905 0 .714-.211 1.412-.608 2.006L7 11v9m7-10h-2M7 20H5a2 2 0 01-2-2v-6a2 2 0 012-2h2.5"/>
-                        </svg>
+            <div class="h-12" id="panel">
+                <div class="float-right w-auto mx-4 my-2 flex" v-if="admin">
+                    <div class="relative inline-block w-10 mr-2 align-middle select-none transition duration-200 ease-in-out"
+                         onclick="videoInfo.toggleAllowMembers()">
+                        <input class="toggle-checkbox absolute block w-6 h-6 rounded-full bg-white border-4 border-red-500 appearance-none cursor-pointer" id="member-control" name="toggle"
+                               type="checkbox"/>
+                        <label class="toggle-label block overflow-hidden h-6 rounded-full bg-red-500 cursor-pointer"
+                               for="member-control"></label>
                     </div>
-                </div>
-                <div class="flex items-center px-2">
-                    <div v-if="isSaved" onclick="videoInfo.onDislike()"
-                         class="w-6 h-6 text-red-700 cursor-pointer">
-                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
-                             stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                  d="M10 14H5.236a2 2 0 01-1.789-2.894l3.5-7A2 2 0 018.736 3h4.018a2 2 0 01.485.06l3.76.94m-7 10v5a2 2 0 002 2h.096c.5 0 .905-.405.905-.904 0-.715.211-1.413.608-2.008L17 13V4m-7 10h2m5-10h2a2 2 0 012 2v6a2 2 0 01-2 2h-2.5"/>
-                        </svg>
-                    </div>
+                    <label class="text-lg text-white font-semibold" for="member-control">Give
+                        Members
+                        Control</label>
                 </div>
 
-                <div class="px-4">
-                    <div v-if="isSaved" onclick="videoInfo.onFavourite()"
-                         class="flex items-center cursor-pointer">
-                        <div class="w-6 h-6 text-red-500">
-                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
-                                 stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round"
-                                      stroke-width="2"
-                                      d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"/>
+                <div class="float-left w-auto mx-6 my-2 flex items-center">
+                    <div class="flex items-center px-1" onclick="videoInfo.onLike()" v-if="isSaved">
+                        <div class="w-6 h-6 text-green-400 cursor-pointer">
+                            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"
+                                 xmlns="http://www.w3.org/2000/svg">
+                                <path d="M14 10h4.764a2 2 0 011.789 2.894l-3.5 7A2 2 0 0115.263 21h-4.017c-.163 0-.326-.02-.485-.06L7 20m7-10V5a2 2 0 00-2-2h-.095c-.5 0-.905.405-.905.905 0 .714-.211 1.412-.608 2.006L7 11v9m7-10h-2M7 20H5a2 2 0 01-2-2v-6a2 2 0 012-2h2.5" stroke-linecap="round"
+                                      stroke-linejoin="round"
+                                      stroke-width="2"/>
                             </svg>
                         </div>
-                        <h1 class="text-white font-semibold text-lg pl-1">Favourite</h1>
+                    </div>
+                    <div class="flex items-center px-2">
+                        <div class="w-6 h-6 text-red-700 cursor-pointer" onclick="videoInfo.onDislike()"
+                             v-if="isSaved">
+                            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"
+                                 xmlns="http://www.w3.org/2000/svg">
+                                <path d="M10 14H5.236a2 2 0 01-1.789-2.894l3.5-7A2 2 0 018.736 3h4.018a2 2 0 01.485.06l3.76.94m-7 10v5a2 2 0 002 2h.096c.5 0 .905-.405.905-.904 0-.715.211-1.413.608-2.008L17 13V4m-7 10h2m5-10h2a2 2 0 012 2v6a2 2 0 01-2 2h-2.5" stroke-linecap="round"
+                                      stroke-linejoin="round"
+                                      stroke-width="2"/>
+                            </svg>
+                        </div>
+                    </div>
+
+                    <div class="px-4">
+                        <div class="flex items-center cursor-pointer" onclick="videoInfo.onFavourite()"
+                             v-if="isSaved">
+                            <div class="w-6 h-6 text-red-500">
+                                <svg fill="none" stroke="currentColor"
+                                     viewBox="0 0 24 24"
+                                     xmlns="http://www.w3.org/2000/svg">
+                                    <path d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" stroke-linecap="round"
+                                          stroke-linejoin="round"
+                                          stroke-width="2"/>
+                                </svg>
+                            </div>
+                            <h1 class="text-white font-semibold text-lg pl-1">Favourite</h1>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
-    </div>
 
-</div>
-<div class="w-1/3 p-2">
-    <div class="w-full h-full min-h-full min-w-full p-4">
-        <div id="room-chat" class="bg-discord-dark rounded-lg w-full h-full relative"
-             style="height: 100%;">
-            <div class="absolute top-0 overflow-y-auto w-full" style="max-height: 34vw">
-                <div v-for="message in messages" class="px-4 pt-2">
-                    <div class="relative py-2">
-                        <img class="inline-block absolute rounded-full object-contain w-12 h-12 mt-1"
-                             v-bind:src="message.avatar" alt="">
-                        <div class="inline-block relative ml-16 mt-1">
-                            <div class="top-0 left-0">
-                                <div>
-                                    <h3 class="inline-block font-semibold text-lg text-blue-400">{{
-                                        message.username }}</h3>
-                                </div>
-                                <div>
-                                    <p class="text-white text-md">
-                                        {{ message.content }}
-                                    </p>
+    </div>
+    <div class="w-1/3 p-2">
+        <div class="w-full h-full min-h-full min-w-full p-4">
+            <div class="bg-discord-dark rounded-lg w-full h-full relative" id="room-chat"
+                 style="height: 100%;">
+                <div class="absolute top-0 overflow-y-auto w-full" style="max-height: 34vw">
+                    <div class="px-4 pt-2" v-for="message in messages">
+                        <div class="relative py-2">
+                            <img alt=""
+                                 class="inline-block absolute rounded-full object-contain w-12 h-12 mt-1" v-bind:src="message.avatar">
+                            <div class="inline-block relative ml-16 mt-1">
+                                <div class="top-0 left-0">
+                                    <div>
+                                        <h3 class="inline-block font-semibold text-lg text-blue-400">
+                                            {{
+                                            message.username }}</h3>
+                                    </div>
+                                    <div>
+                                        <p class="text-white text-md">
+                                            {{ message.content }}
+                                        </p>
+                                    </div>
                                 </div>
                             </div>
                         </div>
                     </div>
                 </div>
-            </div>
 
 
-            <div class="absolute bottom-0 w-full mb-6 h-12 px-2 pb-2 rounded-lg bg-discord-dark">
-                <div class="p-2 relative w-full">
-                    <label>
-                        <input id="text-box"
-                               v-on:keypress="onTyping"
-                               class="border-2 text-white border-gray-900 bg-gray-800 w-full h-10 px-5 pr-16 rounded-lg text-sm focus:outline-none placeholder-gray-200 font-medium"
-                               type="text"
-                               name="message"
-                               placeholder="Send something to the movie room...">
-                    </label>
-                    <button v-on:click="onTypingSubmit" type="submit"
-                            class="absolute right-0 top-0 my-4 mr-4 focus:outline-none text-spoods-cyan transition duration-200 transform ease-in-out"
-                            onclick="this.classList.add('rotate-45');setTimeout(()=>{this.classList.remove('rotate-45');this.classList.add('-rotate-45');}, 300);setTimeout(()=>{this.classList.remove('-rotate-45');}, 500)">
-                        <svg class="h-6 w-6" xmlns="http://www.w3.org/2000/svg" fill="none"
-                             viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                  d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"/>
-                        </svg>
-                    </button>
+                <div class="absolute bottom-0 w-full mb-6 h-12 px-2 pb-2 rounded-lg bg-discord-dark">
+                    <div class="p-2 relative w-full">
+                        <label>
+                            <input class="border-2 text-white border-gray-900 bg-gray-800 w-full h-10 px-5 pr-16 rounded-lg text-sm focus:outline-none placeholder-gray-200 font-medium"
+                                   id="text-box"
+                                   name="message"
+                                   placeholder="Send something to the movie room..."
+                                   type="text"
+                                   v-on:keypress="onTyping">
+                        </label>
+                        <button class="absolute right-0 top-0 my-4 mr-4 focus:outline-none text-spoods-cyan transition duration-200 transform ease-in-out" onclick="this.classList.add('rotate-45');setTimeout(()=>{this.classList.remove('rotate-45');this.classList.add('-rotate-45');}, 300);setTimeout(()=>{this.classList.remove('-rotate-45');}, 500)"
+                                type="submit"
+                                v-on:click="onTypingSubmit">
+                            <svg class="h-6 w-6" fill="none" stroke="currentColor"
+                                 viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                <path d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8" stroke-linecap="round"
+                                      stroke-linejoin="round"
+                                      stroke-width="2"/>
+                            </svg>
+                        </button>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
-</div>
 </div>
 </body>
 <script>
