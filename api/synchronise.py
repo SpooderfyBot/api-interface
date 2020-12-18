@@ -10,7 +10,6 @@ from gateway import Gateway, gateway_connect, GatewayException, RoomUnknown
 from models import Message, User
 from redis import redis
 from utils import (
-    create_session_id,
     create_room_id,
     session_valid,
 )

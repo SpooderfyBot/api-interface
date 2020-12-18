@@ -298,6 +298,7 @@
     const WS_URL = "wss://" + document.location.host + "/gateway";
     const API_URL = "https://" + document.location.host + "/api";
     const ROOM_ID = document.location.href.replace(REPLACE_URL, "");
+    const API_ROOM_URL = `${API_URL}/room/${ROOM_ID}`
 
     const OP_PLAY = 0
     const OP_PAUSE = 1
@@ -366,11 +367,20 @@
             addMessage: function (msg) {
                 this.messages.push(msg);
             },
-            onTypingSubmit: function (event) {
-
+            onTypingSubmit: function () {
+                let elm = document.getElementById("text-box");
+                let msg = elm.value;
+                let xhttp = new XMLHttpRequest();
+                let payload = JSON.stringify({
+                    content: msg,
+                })
+                xhttp.open("POST", `${API_ROOM_URL}/message`, true);
+                xhttp.send(payload);
             },
             onTyping: function (event) {
-
+                if (event.key === "Enter") {
+                    this.onTypingSubmit();
+                }
             }
         },
         created: function () {
