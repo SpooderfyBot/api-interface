@@ -128,7 +128,7 @@
                             </div>
 
                             <video v-if="videoSrcUrl != ''" class="video" controls id="video" preload="metadata" poster="">
-                                <source v-bind:src="videoSrcUrl">
+                                <source id="vid-source" src="">
                             </video>
 
                             <div v-if="videoSrcUrl != ''" class="video-controls" id="video-controls">
@@ -703,9 +703,12 @@
                 },
 
                 setVideo(videoInfo) {
+                    let src = document.getElementById("vid-source");
+                    src.src = this.videoSrcUrl;
                     this.videoTitle = videoInfo.title;
-                    this.videoSrcUrl = videoInfo.reference_url;
+                    this.videoSrcUrl = videoInfo.url;
                     this.reloadVideo();
+                    this.video.load();
                 }
             },
         created: function () {

@@ -282,7 +282,7 @@ class PlayerEndpoints(BaseGatewayEnabled, router.Blueprint):
         "/api/player/{room_id:str}/remove",
         endpoint_name="Remove Video",
         description="removes a video from the queue",
-        methods=["PUT"],
+        methods=["DELETE"],
     )
     async def remove_video(self, request: Request, room_id: str, index: int):
         if not (await session_valid(request)):
