@@ -127,9 +127,7 @@
                                 </div>
                             </div>
 
-                            <video v-if="videoSrcUrl != ''" class="video" controls id="video" preload="metadata" poster="">
-                                <source id="vid-source" v-bind:src="videoSrcUrl">
-                            </video>
+                            <video v-if="videoSrcUrl != ''" :src="videoSrcUrl" class="video" controls id="video" preload="metadata" poster=""></video>
 
                             <div v-if="videoSrcUrl != ''" class="video-controls" id="video-controls">
                                 <div class="video-progress">
