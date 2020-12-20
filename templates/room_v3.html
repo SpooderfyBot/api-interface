@@ -344,8 +344,7 @@
                 VideoControls.video.currentTime = data.position;
                 break;
             case OP_NEXT:
-                console.log(data)
-                VideoControls.setVideo(data);
+                VideoControls.setVideo(data.data);
                 break;
             case OP_MESSAGE:
                 roomChat.addMessage(data)
