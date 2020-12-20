@@ -8,6 +8,7 @@ import logging
 from fastapi import responses, FastAPI, Request
 from gateway import Gateway, gateway_connect, GatewayException, RoomUnknown
 from models import Message, User
+from models.sync import Video
 from redis import redis
 from utils import (
     create_room_id,
@@ -218,6 +219,54 @@ class PlayerEndpoints(BaseGatewayEnabled, router.Blueprint):
                 },
             }
         })
+        return responses.ORJSONResponse({"status": 200, "message": "OK"})
+
+    @router.endpoint(
+        "/api/player/{room_id:str}/add",
+        endpoint_name="Add Video",
+        description="Adds a video to the queue",
+        methods=["PUT"],
+    )
+    async def add_video(self, request: Request, room_id: str, video: Video):
+        if not (await session_valid(request)):
+            return responses.ORJSONResponse({
+                "status": 401,
+                "message": "Unauthorized"
+            }, status_code=401)
+
+        existing = await redis['videos'].get(room_id)
+        if existing is not None:
+            existing = orjson.loads(existing.decode())
+        else:
+            existing = []
+
+        existing.append(video.dict())
+
+        await redis['videos'].set(room_id, orjson.dumps(existing))
+
+        return responses.ORJSONResponse({"status": 200, "message": "OK"})
+
+    @router.endpoint(
+        "/api/player/{room_id:str}/remove",
+        endpoint_name="Remove Video",
+        description="removes a video from the queue",
+        methods=["PUT"],
+    )
+    async def remove_video(self, request: Request, room_id: str, index: int):
+        if not (await session_valid(request)):
+            return responses.ORJSONResponse({
+                "status": 401,
+                "message": "Unauthorized"
+            }, status_code=401)
+
+        existing = await redis['videos'].get(room_id)
+        if existing is None:
+            return responses.ORJSONResponse({"status": 400, "message": "No videos in queue."})
+
+        existing = orjson.loads(existing.decode())
+        if index in range(len(existing)):
+            existing.reverse(index)
+
         return responses.ORJSONResponse({"status": 200, "message": "OK"})
 
 

@@ -19,6 +19,7 @@ APP_FILES = [
 CACHE_COLLECTIONS = [
     "rooms",
     "sessions",
+    "videos",
 ]
 
 if __name__ != '__main__':
