@@ -708,6 +708,7 @@
                 },
 
                 setVideo(videoInfo) {
+                    console.log(`Setting video: ${videoInfo}`)
                     this.videoTitle = videoInfo.title;
                     this.videoSrcUrl = videoInfo.url;
                     this.reloadVideo();
