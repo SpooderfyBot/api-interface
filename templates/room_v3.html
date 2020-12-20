@@ -671,6 +671,10 @@
                     this.fullscreenIcons = this.fullscreenButton.querySelectorAll('use');
                     this.pipButton = document.getElementById('pip-button')
 
+                    const videoWorks = !!document.createElement('video').canPlayType;
+                    if (videoWorks) {
+                        this.video.controls = false
+                    }
 
                     this.playButton.addEventListener('click', this.togglePlay);
 
