@@ -177,14 +177,29 @@ class PlayerEndpoints(BaseGatewayEnabled, router.Blueprint):
                 "message": "Unauthorized"
             }, status_code=401)
 
+        existing = await redis['videos'].get(room_id)
+        if existing is None:
+            return responses.ORJSONResponse({"status": 400, "message": "No videos in queue."})
+        existing = orjson.loads(existing.decode())
+
+        if len(existing['videos']) == 0:
+            return responses.ORJSONResponse({"status": 400, "message": "No videos in queue."})
+
+        try:
+            video = existing['videos'][existing['index']]
+            index = existing['index'] + 1
+        except IndexError:
+            video = existing['videos'][0]
+            index = 0
+
+        existing['index'] = index
+        await redis['videos'].set(room_id, orjson.dumps(existing))
+
         await self.ws.send({
             "room_id": room_id,
             "message": {
                 "op": OP_NEXT,
-                "track": {  # todo add track fetching
-                    "title": "xyz",
-                    "reference_url": "xyz.com",
-                },
+                "track": video,
             }
         })
         return responses.ORJSONResponse({"status": 200, "message": "OK"})
@@ -209,14 +224,31 @@ class PlayerEndpoints(BaseGatewayEnabled, router.Blueprint):
                 "message": "Unauthorized"
             }, status_code=401)
 
+        existing = await redis['videos'].get(room_id)
+        if existing is None:
+            return responses.ORJSONResponse({"status": 400, "message": "No videos in queue."})
+        existing = orjson.loads(existing.decode())
+
+        if len(existing['videos']) == 0:
+            return responses.ORJSONResponse({"status": 400, "message": "No videos in queue."})
+
+        try:
+            index = existing['index'] - 1
+            if index < 0:
+                index = len(existing['videos']) + index
+            video = existing['videos'][existing['index']]
+        except IndexError:
+            video = existing['videos'][0]
+            index = 0
+
+        existing['index'] = index
+        await redis['videos'].set(room_id, orjson.dumps(existing))
+
         await self.ws.send({
             "room_id": room_id,
             "message": {
                 "op": OP_NEXT,
-                "track": {  # todo add track fetching
-                    "title": "xyz",
-                    "reference_url": "xyz.com",
-                },
+                "track": video,
             }
         })
         return responses.ORJSONResponse({"status": 200, "message": "OK"})
@@ -238,9 +270,9 @@ class PlayerEndpoints(BaseGatewayEnabled, router.Blueprint):
         if existing is not None:
             existing = orjson.loads(existing.decode())
         else:
-            existing = []
+            existing = {'index': 0, 'videos': []}
 
-        existing.append(video.dict())
+        existing['videos'].append(video.dict())
 
         await redis['videos'].set(room_id, orjson.dumps(existing))
 
@@ -264,8 +296,8 @@ class PlayerEndpoints(BaseGatewayEnabled, router.Blueprint):
             return responses.ORJSONResponse({"status": 400, "message": "No videos in queue."})
 
         existing = orjson.loads(existing.decode())
-        if index in range(len(existing)):
-            existing.reverse(index)
+        if index in range(len(existing['videos'])):
+            existing['videos'].remove(index)
 
         return responses.ORJSONResponse({"status": 200, "message": "OK"})
 

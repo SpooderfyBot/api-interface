@@ -6,5 +6,5 @@ class Message(BaseModel):
 
 
 class Video(BaseModel):
-    video_title: str
-    video_url: str
+    title: str
+    url: str
