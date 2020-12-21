@@ -304,6 +304,7 @@
     const API_URL = "https://" + document.location.host + "/api";
     const ROOM_ID = document.location.href.replace(REPLACE_URL, "");
     const API_ROOM_URL = `${API_URL}/room/${ROOM_ID}`
+    const API_PLAYER_URL = `${API_URL}/player/${ROOM_ID}`
 
     const OP_PLAY = 0
     const OP_PAUSE = 1
@@ -463,13 +464,13 @@
                     }
 
                     let xhttp = new XMLHttpRequest();
-                    xhttp.open("PUT", `${API_ROOM_URL}/play`, true);
+                    xhttp.open("PUT", `${API_PLAYER_URL}/play`, true);
                     xhttp.send(null);
                 },
 
                 putPause: function () {
                     let xhttp = new XMLHttpRequest();
-                    xhttp.open("PUT", `${API_ROOM_URL}/pause`, true);
+                    xhttp.open("PUT", `${API_PLAYER_URL}/pause`, true);
                     xhttp.send(null);
                 },
 
@@ -478,7 +479,7 @@
                     let payload = JSON.stringify({
                         position: seekTo,
                     })
-                    xhttp.open("PUT", `${API_ROOM_URL}/pause`, true);
+                    xhttp.open("PUT", `${API_PLAYER_URL}/pause`, true);
                     xhttp.send(payload);
                 },
 
