@@ -682,6 +682,7 @@
                     this.video.addEventListener('play', this.updatePlayButton);
                     this.video.addEventListener('pause', this.updatePlayButton);
                     this.video.addEventListener('durationchange', this.initializeVideo);
+                    this.video.addEventListener('loadedmetadata', this.initializeVideo);
                     this.video.addEventListener('timeupdate', this.updateTimeElapsed);
                     this.video.addEventListener('timeupdate', this.updateProgress);
                     this.video.addEventListener('volumechange', this.updateVolumeIcon);
