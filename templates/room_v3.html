@@ -669,6 +669,12 @@
                     this.playbackAnimation = document.getElementById('playback-animation');
                     this.fullscreenButton = document.getElementById('fullscreen-button');
                     this.videoContainer = document.getElementById('video-container');
+
+                    if (this.fullscreenButton == null) {
+                        this.fullscreenButton = document.getElementById('fullscreen-button');
+                        console.log(this.fullscreenButton)
+                    }
+
                     this.fullscreenIcons = this.fullscreenButton.querySelectorAll('use');
                     this.pipButton = document.getElementById('pip-button')
 
