@@ -475,7 +475,6 @@
                 },
 
                 putSeek: function (seekTo) {
-                    console.log(seekTo);
                     let xhttp = new XMLHttpRequest();
                     xhttp.open("PUT", `${API_PLAYER_URL}/seek?position=${seekTo}`, true);
                     xhttp.send(null);
