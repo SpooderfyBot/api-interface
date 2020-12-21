@@ -475,6 +475,7 @@
                 },
 
                 putSeek: function (seekTo) {
+                    console.log(seekTo);
                     let xhttp = new XMLHttpRequest();
                     xhttp.open("PUT", `${API_PLAYER_URL}/pause?position=${seekTo}`, true);
                     xhttp.send(null);
@@ -544,6 +545,7 @@
                 },
 
                 skipAhead: function (event) {
+                    console.log("seeking")
                     const skipTo = event.target.dataset.seek
                         ? event.target.dataset.seek
                         : event.target.value;
