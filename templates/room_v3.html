@@ -476,11 +476,8 @@
 
                 putSeek: function (seekTo) {
                     let xhttp = new XMLHttpRequest();
-                    let payload = JSON.stringify({
-                        position: seekTo,
-                    })
-                    xhttp.open("PUT", `${API_PLAYER_URL}/pause`, true);
-                    xhttp.send(payload);
+                    xhttp.open("PUT", `${API_PLAYER_URL}/pause?position=${seekTo}`, true);
+                    xhttp.send(null);
                 },
 
                 togglePlay:  function () {
