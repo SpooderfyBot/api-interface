@@ -6,19 +6,21 @@ import urllib.parse
 
 from fastapi import responses, FastAPI, Request
 from models import User
-from redis import redis
-from utils import create_session_id
-
+from utils import create_session_id, session_valid
 
 CLIENT_ID = os.getenv("DISCORD_CLIENT_ID")
 CLIENT_SECRET = os.getenv("DISCORD_CLIENT_SECRET")
 
+ADD_SESSION = "http://spooderfy_gateway:8000/api/sessions/add"
 REDIRECT_URI = "https://spooderfy.com/api/login"
 
 DISCORD_BASE_URL = "https://discord.com/api"
 DISCORD_OAUTH2_AUTH = "/oauth2/authorize"
 DISCORD_OAUTH2_USER = "/users/@me"
 DISCORD_OAUTH2_TOKEN = "/oauth2/token"
+
+DISCORD_AVATAR = "https://images.discordapp.net/avatars/" \
+                 "{user_id}/{avatar}.png?size=512"
 
 
 def make_redirect_url() -> str:
@@ -50,7 +52,7 @@ class Authorization(router.Blueprint):
             await self.session.close()
 
     @router.endpoint(
-        "/api/login",
+        "/login",
         endpoint_name="Discord Login",
         description="Login via discord.",
         methods=["GET"],
@@ -77,11 +79,8 @@ class Authorization(router.Blueprint):
         """
 
         if code is None:
-            existing = request.cookies.get("session")
-            if existing is not None:
-                valid = await redis['sessions'].get(existing)
-                if valid is not None:
-                    return responses.RedirectResponse(redirect_to)
+            if not session_valid(request=request):
+                return responses.RedirectResponse(redirect_to)
 
             url = make_redirect_url()
             resp = responses.RedirectResponse(url)
@@ -96,7 +95,20 @@ class Authorization(router.Blueprint):
                 })
 
             session_id = create_session_id()
-            await redis['sessions'].set(session_id, user.json())
+            data = {
+                "session_id": session_id,
+                "user": {
+                    "id": user.id,
+                    "name": user.username,
+                    "avatar_url": DISCORD_AVATAR.format(user_id=user.id, avatar=user.avatar)
+                }
+            }
+            resp = await self.session.post(ADD_SESSION, data=data)
+            if resp.status >= 400:
+                return responses.ORJSONResponse({
+                    "status": 500,
+                    "message": "gateway did not accept request",
+                })
 
             redirect_to = request.cookies.pop("redirect_to", "/home")
             resp = responses.RedirectResponse(redirect_to)
