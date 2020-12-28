@@ -103,7 +103,7 @@ class Authorization(router.Blueprint):
                     "avatar_url": DISCORD_AVATAR.format(user_id=user.id, avatar=user.avatar)
                 }
             }
-            resp = await self.session.post(ADD_SESSION, data=data)
+            resp = await self.session.post(ADD_SESSION, json=data)
             if resp.status >= 400:
                 return responses.ORJSONResponse({
                     "status": 500,
