@@ -12,7 +12,7 @@ CLIENT_ID = os.getenv("DISCORD_CLIENT_ID")
 CLIENT_SECRET = os.getenv("DISCORD_CLIENT_SECRET")
 
 ADD_SESSION = "http://spooderfy_gateway:8000/api/sessions/add"
-REDIRECT_URI = "https://spooderfy.com/api/login"
+REDIRECT_URI = "https://spooderfy.com/login"
 
 DISCORD_BASE_URL = "https://discord.com/api"
 DISCORD_OAUTH2_AUTH = "/oauth2/authorize"

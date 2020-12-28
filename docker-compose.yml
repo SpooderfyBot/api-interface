@@ -11,6 +11,7 @@ services:
       - .:/code
     ports:
       - "5050:5050"
+
 networks:
   default:
     external:
