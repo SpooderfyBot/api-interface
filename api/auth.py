@@ -80,11 +80,15 @@ class Authorization(router.Blueprint):
 
         if code is None:
             if not session_valid(request=request):
+                print("valid???")
                 return responses.RedirectResponse(redirect_to)
 
+            print("invalid")
             url = make_redirect_url()
+            print(url)
             resp = responses.RedirectResponse(url)
             resp.set_cookie("redirect_to", redirect_to)
+            print(resp)
             return resp
         else:
             user = await self.get_user(code)
