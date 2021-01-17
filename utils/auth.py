@@ -6,6 +6,7 @@ def session_valid(request: Request) -> bool:
     """ Checks to see if a given request has a valid session """
 
     session_id = request.cookies.get("session")
+    print(session_id)
     return session_id is not None
 
 
