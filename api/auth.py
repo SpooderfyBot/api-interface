@@ -111,7 +111,7 @@ class Authorization(router.Blueprint):
                 })
 
             redirect_to = request.cookies.pop("redirect_to", "/home")
-            resp = responses.RedirectResponse(redirect_to)
+            resp = responses.RedirectResponse(f"https://spooderfy.com{redirect_to}")
             resp.delete_cookie("redirect_to")
             resp.set_cookie("session", session_id, secure=True, samesite="strict")
 
