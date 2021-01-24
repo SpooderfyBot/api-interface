@@ -84,7 +84,7 @@ class Authorization(router.Blueprint):
 
             url = make_redirect_url()
             resp = responses.RedirectResponse(url)
-            resp.set_cookie("redirect_to", redirect_to)
+            resp.set_cookie("redirect", redirect_to)
             return resp
         else:
             user = await self.get_user(code)
@@ -110,9 +110,9 @@ class Authorization(router.Blueprint):
                     "message": "gateway did not accept request",
                 })
 
-            redirect_to = request.cookies.pop("redirect_to", "/home")
+            redirect_to = request.cookies.pop("redirect", "/home")
             resp = responses.RedirectResponse(f"https://spooderfy.com{redirect_to}")
-            resp.delete_cookie("redirect_to")
+            resp.delete_cookie("redirect")
             resp.set_cookie("session", session_id, secure=True, samesite="strict")
 
             return resp
