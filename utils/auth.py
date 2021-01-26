@@ -18,7 +18,6 @@ def login_required(func):
 
     @wraps(func)
     async def wrapper(*args, **kwargs):
-        print("pew")
         request = kwargs.get("request")
 
         session_id = request.cookies.get("session")

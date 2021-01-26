@@ -12,7 +12,7 @@ CLIENT_ID = os.getenv("DISCORD_CLIENT_ID")
 CLIENT_SECRET = os.getenv("DISCORD_CLIENT_SECRET")
 
 ADD_SESSION = "http://spooderfy_gateway:8000/api/sessions/add"
-REDIRECT_URI = "https://spooderfy.com/login"
+REDIRECT_URI = "https://spooderfy.com/authorized"
 
 DISCORD_BASE_URL = "https://discord.com/api"
 DISCORD_OAUTH2_AUTH = "/oauth2/authorize"
@@ -52,6 +52,45 @@ class Authorization(router.Blueprint):
             await self.session.close()
 
     @router.endpoint(
+        "/authorized",
+        endpoint_name="Discord Login",
+        description="Login via discord.",
+        methods=["GET"],
+    )
+    async def authorized(
+        self,
+        request: Request,
+        code: str,
+        state: str,
+    ):
+        user = await self.get_user(code)
+        if user is None:
+            return responses.ORJSONResponse({
+                "status": 500,
+                "message": "discord did not respond correctly",
+            })
+
+        session_id = create_session_id()
+        data = {
+            "session_id": session_id,
+            "user": {
+                "id": user.id,
+                "name": user.username,
+                "avatar_url": DISCORD_AVATAR.format(user_id=user.id, avatar=user.avatar)
+            }
+        }
+        resp = await self.session.post(ADD_SESSION, json=data)
+        if resp.status >= 400:
+            return responses.ORJSONResponse({
+                "status": 500,
+                "message": "gateway did not accept request",
+            })
+
+        resp = responses.RedirectResponse(f"https://spooderfy.com{state}")
+        resp.set_cookie("session", session_id, secure=True, samesite="strict")
+        return resp
+
+    @router.endpoint(
         "/login",
         endpoint_name="Discord Login",
         description="Login via discord.",
@@ -61,8 +100,6 @@ class Authorization(router.Blueprint):
             self,
             request: Request,
             redirect_to: str = "/home",
-            code: t.Optional[str] = None,
-            state: str = "/home",
     ):
         """
         The login api for discord, both logins and redirects are used on this
@@ -78,42 +115,11 @@ class Authorization(router.Blueprint):
         is made to discord to get the relevant data, a session id is produced
         and saved.
         """
-        print("pew pew")
-        print(redirect_to, code, state)
+        if session_valid(request=request):
+            return responses.RedirectResponse(redirect_to)
 
-        if code is None:
-            if session_valid(request=request):
-                return responses.RedirectResponse(redirect_to)
-
-            url = make_redirect_url(redirect_to)
-            return responses.RedirectResponse(url)
-        else:
-            user = await self.get_user(code)
-            if user is None:
-                return responses.ORJSONResponse({
-                    "status": 500,
-                    "message": "discord did not respond correctly",
-                })
-
-            session_id = create_session_id()
-            data = {
-                "session_id": session_id,
-                "user": {
-                    "id": user.id,
-                    "name": user.username,
-                    "avatar_url": DISCORD_AVATAR.format(user_id=user.id, avatar=user.avatar)
-                }
-            }
-            resp = await self.session.post(ADD_SESSION, json=data)
-            if resp.status >= 400:
-                return responses.ORJSONResponse({
-                    "status": 500,
-                    "message": "gateway did not accept request",
-                })
-
-            resp = responses.RedirectResponse(f"https://spooderfy.com{state}")
-            resp.set_cookie("session", session_id, secure=True, samesite="strict")
-            return resp
+        url = make_redirect_url(redirect_to)
+        return responses.RedirectResponse(url)
 
     async def get_user(self, code) -> t.Optional[User]:
         data = {
