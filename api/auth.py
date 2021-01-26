@@ -78,6 +78,8 @@ class Authorization(router.Blueprint):
         is made to discord to get the relevant data, a session id is produced
         and saved.
         """
+        print("pew pew")
+        print(redirect_to, code, state)
 
         if code is None:
             if session_valid(request=request):
