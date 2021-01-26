@@ -63,6 +63,7 @@ class Authorization(router.Blueprint):
         code: str,
         state: str,
     ):
+        print(code, state)
         user = await self.get_user(code)
         if user is None:
             return responses.ORJSONResponse({
