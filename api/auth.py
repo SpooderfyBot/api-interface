@@ -23,7 +23,7 @@ DISCORD_AVATAR = "https://images.discordapp.net/avatars/" \
                  "{user_id}/{avatar}.png?size=512"
 
 
-def make_redirect_url() -> str:
+def make_redirect_url(state) -> str:
     return (
             DISCORD_BASE_URL +
             DISCORD_OAUTH2_AUTH +
@@ -31,7 +31,7 @@ def make_redirect_url() -> str:
             f"&redirect_uri={urllib.parse.quote(REDIRECT_URI, safe='')}"
             "&response_type=code"
             "&scope=identify"
-            f"&state={create_session_id()}"
+            f"&state={state}"
     )
 
 
@@ -61,7 +61,8 @@ class Authorization(router.Blueprint):
             self,
             request: Request,
             redirect_to: str = "/home",
-            code: t.Optional[str] = None
+            code: t.Optional[str] = None,
+            state: str = "/home",
     ):
         """
         The login api for discord, both logins and redirects are used on this
@@ -82,10 +83,8 @@ class Authorization(router.Blueprint):
             if session_valid(request=request):
                 return responses.RedirectResponse(redirect_to)
 
-            url = make_redirect_url()
-            resp = responses.RedirectResponse(url)
-            resp.set_cookie("redirect", redirect_to)
-            return resp
+            url = make_redirect_url(redirect_to)
+            return responses.RedirectResponse(url)
         else:
             user = await self.get_user(code)
             if user is None:
@@ -110,11 +109,8 @@ class Authorization(router.Blueprint):
                     "message": "gateway did not accept request",
                 })
 
-            redirect_to = request.cookies.pop("redirect", "/home")
-            resp = responses.RedirectResponse(f"https://spooderfy.com{redirect_to}")
-            resp.delete_cookie("redirect")
+            resp = responses.RedirectResponse(f"https://spooderfy.com{state}")
             resp.set_cookie("session", session_id, secure=True, samesite="strict")
-
             return resp
 
     async def get_user(self, code) -> t.Optional[User]:
